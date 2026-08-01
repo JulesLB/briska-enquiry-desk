@@ -11,6 +11,9 @@
       ]
     }
   ],
+  "redirects": [
+    { "source": "/prompts/(.*)", "destination": "/about", "permanent": false }
+  ],
   "functions": {
     "api/*.py": { "includeFiles": "prompts/**" }
   }
