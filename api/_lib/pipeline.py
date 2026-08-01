@@ -6,29 +6,42 @@ from _lib.prompts import canned_ack, load_prompt
 
 def process_enquiry(enquiry: str) -> dict[str, object]:
     result = brainlib.run_api(enquiry, load_prompt("system-prompt.md"))
-    if "card" not in result:
+    if "error" in result:
         return result
-    card = result["card"]
-    problems = brainlib.validate_card(card) if isinstance(card, dict) else ["no JSON card in brain output"]
-    if not isinstance(card, dict) or problems:
-        return {
-            "card": {
-                "language": "en", "bucket": "unclear", "confidence": "low", "stream": "none",
-                "urgent": False, "escalate": True,
-                "escalation_reasons": ["brain output failed validation"],
-                "draft": canned_ack(),
-                "log_row": {"summary": enquiry[:80], "next_action": "review by a person"},
-            },
-            "guardrail": {"blocked": True, "kind": "invalid_card", "problems": problems},
-        }
+    card = result.get("card")
+    if not isinstance(card, dict):
+        return _safe_floor(enquiry, ["no JSON card in brain output"], "unparsed_output")
+    problems = brainlib.validate_card(card)
+    if problems:
+        return _safe_floor(enquiry, problems, "invalid_card")
     return _apply_guardrail(card)
+
+
+def _safe_floor(enquiry: str, problems: list[str], kind: str) -> dict[str, object]:
+    return {
+        "card": {
+            "language": "en", "bucket": "unclear", "confidence": "low", "stream": "none",
+            "urgent": False, "escalate": True,
+            "escalation_reasons": ["brain output failed validation"],
+            "draft": canned_ack(),
+            "log_row": {"summary": enquiry[:80], "next_action": "review by a person"},
+        },
+        "guardrail": {"blocked": True, "kind": kind, "problems": problems},
+    }
 
 
 def process_followup(followup_type: str, lead: dict[str, object]) -> dict[str, object]:
     request = json.dumps({"followup_due": followup_type, "lead": lead}, ensure_ascii=False, indent=2)
     result = brainlib.run_api(request, load_prompt("followup-prompt.md"))
-    if "card" not in result or not isinstance(result["card"], dict):
+    if "error" in result:
         return result
+    if not isinstance(result.get("card"), dict):
+        return {
+            "card": {"followup_type": followup_type, "draft": None,
+                     "hold_reason": "the assistant's answer did not come back in the agreed format"},
+            "guardrail": {"blocked": True, "kind": "unparsed_output",
+                          "problems": ["no JSON card in brain output"]},
+        }
     card = result["card"]
     hits = guardrail.scan(card.get("draft") if isinstance(card.get("draft"), str) else None)
     if hits:

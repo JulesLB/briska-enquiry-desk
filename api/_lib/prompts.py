@@ -21,7 +21,7 @@ PLACEHOLDERS: dict[str, str] = {
 }
 
 ACK_TEMPLATE = (
-    "Thank you for your enquiry — it has reached {firm_name} and a member of the team is "
+    "Thank you for your enquiry. It has reached {firm_name} and a member of the team is "
     "looking at it now. We will come back to you shortly.\n\n"
     "If your situation is time-sensitive, please call us on {firm_phone}."
 )

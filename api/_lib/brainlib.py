@@ -49,6 +49,32 @@ def first_json_object(text: str) -> str | None:
     return None
 
 
+def escape_raw_newlines(text: str) -> str:
+    out: list[str] = []
+    in_string = False
+    escaped = False
+    for ch in text:
+        if in_string:
+            if escaped:
+                escaped = False
+            elif ch == "\\":
+                escaped = True
+            elif ch == '"':
+                in_string = False
+            elif ch == "\n":
+                out.append("\\n")
+                continue
+            elif ch == "\r":
+                continue
+            elif ch == "\t":
+                out.append("\\t")
+                continue
+        elif ch == '"':
+            in_string = True
+        out.append(ch)
+    return "".join(out)
+
+
 def parse_card(result_text: str) -> dict[str, object] | None:
     fenced = re.search(r"```(?:json)?\s*\n(.*?)\n```", result_text, re.DOTALL)
     candidates = [strip_fences(result_text)]
@@ -57,6 +83,7 @@ def parse_card(result_text: str) -> dict[str, object] | None:
     obj = first_json_object(result_text)
     if obj:
         candidates.append(obj)
+    candidates += [escape_raw_newlines(c) for c in list(candidates)]
     for candidate in candidates:
         try:
             parsed = json.loads(candidate)
