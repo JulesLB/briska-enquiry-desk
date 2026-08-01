@@ -1,0 +1,418 @@
+{
+  "note": "Sample leads for the dashboard demo. Every row here is a placeholder until a pilot firm's real enquiries replace it; the dashboard labels each one Sample. Dates are offsets in hours before server start so the demo never goes stale.",
+  "leads": [
+    {
+      "id": "S-01",
+      "sample": true,
+      "channel": "form",
+      "enquirer": "R. Sharma",
+      "original_enquiry": "IIT Bombay bachelor's, 4 years product management at Google Singapore. Do I qualify for the Top Talent Pass and what are your fees?",
+      "language": "en",
+      "bucket": "qualified",
+      "stream": "ttps_bc",
+      "urgent": false,
+      "escalate": false,
+      "escalation_reasons": [],
+      "status": "awaiting_reply",
+      "first_response_minutes": 4,
+      "received_hours_ago": 30,
+      "booked_in_hours": null,
+      "touches": [
+        {
+          "hours_ago": 30,
+          "type": "first_reply",
+          "note": "asked graduation year + continuous full-time work",
+          "body": "Hi R. Sharma, thanks for reaching out. The Top Talent Pass has a degree route that looks at where you studied and your full-time work since graduating. Could you tell me your graduation year and how many years you have worked full time since then? Once we have that, we can have a quick call to confirm whether you qualify and talk through the fee. You can book it here: [booking link]."
+        }
+      ],
+      "summary": "PM in Singapore asking about the Top Talent Pass",
+      "next_action": "Chase the open gate questions",
+      "email": "r.sharma.dev@gmail.com"
+    },
+    {
+      "id": "S-02",
+      "sample": true,
+      "channel": "email",
+      "enquirer": "K. Leung",
+      "original_enquiry": "想幫外母申請受養人簽證，我太太係香港永久居民",
+      "language": "zh-hant",
+      "bucket": "qualified",
+      "stream": "dependant",
+      "urgent": false,
+      "escalate": false,
+      "escalation_reasons": [],
+      "status": "booked",
+      "first_response_minutes": 6,
+      "received_hours_ago": 96,
+      "booked_in_hours": 20,
+      "touches": [
+        {
+          "hours_ago": 96,
+          "type": "first_reply",
+          "note": "asked parent's age + sponsoring resident",
+          "body": "多謝您嘅查詢。父母受養人簽證主要視乎保證人嘅身份同申請人嘅情況。想先確認兩點：外母目前嘅年齡，以及係咪由太太（香港永久居民）作為保證人？方便嘅話可以喺呢度預約一次簡短通話：[booking link]。"
+        },
+        {
+          "hours_ago": 70,
+          "type": "inbound_reply",
+          "note": "answered both, wants a call",
+          "body": "外母今年56歲，會由太太做保證人。想約個時間傾下，唔該。"
+        },
+        {
+          "hours_ago": 68,
+          "type": "booking_confirmed",
+          "note": "consultation booked"
+        }
+      ],
+      "summary": "PR's spouse asking about a parent dependant visa",
+      "next_action": "Reminder goes out the day before the call",
+      "email": "kleung@outlook.com"
+    },
+    {
+      "id": "S-03",
+      "sample": true,
+      "channel": "email",
+      "enquirer": "M. Osei",
+      "original_enquiry": "My visa expired 3 weeks ago and I'm still in Hong Kong, what do I do?",
+      "language": "en",
+      "bucket": "qualified",
+      "stream": "none",
+      "urgent": true,
+      "escalate": true,
+      "escalation_reasons": [
+        "overstay"
+      ],
+      "status": "escalated",
+      "first_response_minutes": 2,
+      "received_hours_ago": 52,
+      "booked_in_hours": null,
+      "touches": [
+        {
+          "hours_ago": 52,
+          "type": "acknowledgment",
+          "body": "Thank you for reaching out, and I understand this is stressful. A member of our team will contact you today. So we can reach you, could you share a phone number or book a time here: [booking link]? It also helps to know what visa or status you were last on and a brief line on what happened. If you would rather speak now, you can call us on [phone]."
+        }
+      ],
+      "summary": "Overstay disclosure, routed straight to a person",
+      "next_action": "Principal owns the thread, no automated touches",
+      "email": "m.osei.fin@gmail.com"
+    },
+    {
+      "id": "S-04",
+      "sample": true,
+      "channel": "form",
+      "enquirer": "J. Baptiste",
+      "original_enquiry": "42, master's degree, 15 years in banking in London, no HK offer yet. Which scheme fits me?",
+      "language": "en",
+      "bucket": "qualified",
+      "stream": "qmas",
+      "urgent": false,
+      "escalate": false,
+      "escalation_reasons": [],
+      "status": "awaiting_reply",
+      "first_response_minutes": 5,
+      "received_hours_ago": 126,
+      "booked_in_hours": null,
+      "touches": [
+        {
+          "hours_ago": 126,
+          "type": "first_reply",
+          "note": "named QMAS + TTPS honestly, proposed the call",
+          "body": "Hi J. Baptiste, thanks for reaching out. Based on what you have shared, both the Quality Migrant scheme and the Top Talent Pass could be an option for someone with your background. To clarify which visa would be the best fit, we'd suggest a quick call to align on the next step. You can book it here: [booking link]."
+        },
+        {
+          "hours_ago": 100,
+          "type": "chase_1",
+          "note": "offered the call again",
+          "body": "Hi, following up on our last message. When you have a moment, let's have a quick chat to define which visa would be the best fit for you. Here is the link to book the call: [booking link]."
+        }
+      ],
+      "summary": "Senior banker in London weighing QMAS vs TTPS",
+      "next_action": "Second chase due, offer the call as the easier path",
+      "email": "j.baptiste@protonmail.com"
+    },
+    {
+      "id": "S-05",
+      "sample": true,
+      "channel": "email",
+      "enquirer": "T. Nakamura",
+      "original_enquiry": "We want to sponsor a German engineer we've hired. Can you handle the work visa and how long does it take?",
+      "language": "en",
+      "bucket": "qualified",
+      "stream": "gep",
+      "urgent": false,
+      "escalate": false,
+      "escalation_reasons": [],
+      "status": "no_show",
+      "first_response_minutes": 3,
+      "received_hours_ago": 200,
+      "booked_in_hours": null,
+      "touches": [
+        {
+          "hours_ago": 200,
+          "type": "first_reply",
+          "note": "asked role + candidate background",
+          "body": "Hi T. Nakamura, thanks for reaching out. Yes, we can handle the work visa. To help us prepare, could you share the role you have hired him for and a short line on his qualifications and experience? On timing, it depends on the case details. We can have a quick call to clarify, then give you a better estimate: [booking link]."
+        },
+        {
+          "hours_ago": 180,
+          "type": "inbound_reply",
+          "note": "sent the details, booked a call",
+          "body": "Role is Senior Process Engineer. He holds an MSc from TU Munich and has nine years in the field. I booked Thursday 3pm on your link."
+        },
+        {
+          "hours_ago": 26,
+          "type": "no_show",
+          "note": "no answer at the booked time"
+        }
+      ],
+      "summary": "HR manager sponsoring a hire, missed the call",
+      "next_action": "Rebook message due, no scolding",
+      "email": "t.nakamura@yto-trading.co.jp"
+    },
+    {
+      "id": "S-06",
+      "sample": true,
+      "channel": "form",
+      "enquirer": "A. Fernandes",
+      "original_enquiry": "We're planning the move to Hong Kong next spring, just researching options for now. I have a master's and 8 years in logistics.",
+      "language": "en",
+      "bucket": "qualified",
+      "stream": "qmas",
+      "urgent": false,
+      "escalate": false,
+      "escalation_reasons": [],
+      "status": "nurture",
+      "first_response_minutes": 7,
+      "received_hours_ago": 760,
+      "booked_in_hours": null,
+      "touches": [
+        {
+          "hours_ago": 760,
+          "type": "first_reply",
+          "note": "named QMAS as the likely fit, offered the call",
+          "body": "Hi A. Fernandes, thanks for reaching out. Based on your profile, the Quality Migrant scheme looks like the best option: it is points-based, so you would not need a Hong Kong job offer first. If you're keen to know more, let's have a quick chat: [booking link]."
+        },
+        {
+          "hours_ago": 730,
+          "type": "inbound_reply",
+          "note": "said not ready yet, happy to hear from us closer to the date",
+          "body": "Thanks, we are not ready to commit yet. Happy for you to check in when we are closer to spring."
+        },
+        {
+          "hours_ago": 728,
+          "type": "nurture",
+          "note": "acknowledged their timeline, next check-in near spring",
+          "body": "Noted, we will come back to you in spring. Best of luck with your move."
+        }
+      ],
+      "summary": "Not-ready lead, spring timeline, agreed to check-ins",
+      "next_action": "Monthly nurture touch due",
+      "email": "a.fernandes.eng@gmail.com"
+    },
+    {
+      "id": "S-07",
+      "sample": true,
+      "channel": "email",
+      "enquirer": "“hi do you do visa”",
+      "original_enquiry": "hi do you do visa",
+      "language": "en",
+      "bucket": "unclear",
+      "stream": "none",
+      "urgent": false,
+      "escalate": false,
+      "escalation_reasons": [],
+      "status": "closed",
+      "first_response_minutes": 4,
+      "received_hours_ago": 340,
+      "booked_in_hours": null,
+      "touches": [
+        {
+          "hours_ago": 340,
+          "type": "first_reply",
+          "note": "asked 2 warm opening questions",
+          "body": "Thanks for getting in touch. Yes, visas are what we do. To identify the right visa, could you share what brings you to Hong Kong (a job, family, study) and a line on your background (degree and years of work)?"
+        },
+        {
+          "hours_ago": 310,
+          "type": "chase_1",
+          "note": "restated the openers",
+          "body": "Hi, just making sure my last note reached you. Two quick things would help us identify the right visa: what brings you to Hong Kong, and a line on your background."
+        },
+        {
+          "hours_ago": 240,
+          "type": "chase_2",
+          "note": "offered the call",
+          "body": "Hi, just checking if you're still interested. We can set up a quick 15-minute call to discuss your situation and which visa would be best. Feel free to book it here: [booking link]."
+        },
+        {
+          "hours_ago": 80,
+          "type": "final_chase",
+          "note": "warm close, door open",
+          "body": "I will stop nudging after this one. If Hong Kong comes back onto your plans, we are here and glad to pick this up where we left it: [booking link]."
+        }
+      ],
+      "summary": "One-line enquiry, never replied, sequence completed",
+      "next_action": "None, closed warmly",
+      "email": "throwaway8842@gmail.com"
+    },
+    {
+      "id": "S-08",
+      "sample": true,
+      "channel": "email",
+      "enquirer": "SEO Partners Ltd",
+      "original_enquiry": "We can put your firm on page 1 of Google. Reply for a free audit of your backlink profile.",
+      "language": "en",
+      "bucket": "not_an_enquiry",
+      "stream": "none",
+      "urgent": false,
+      "escalate": false,
+      "escalation_reasons": [],
+      "status": "archived",
+      "first_response_minutes": null,
+      "received_hours_ago": 60,
+      "booked_in_hours": null,
+      "touches": [],
+      "summary": "SEO vendor spam, no draft",
+      "next_action": "Archived",
+      "email": "growth@seopartners-asia.com"
+    },
+    {
+      "id": "S-09",
+      "sample": true,
+      "channel": "form",
+      "enquirer": "W. Chan",
+      "original_enquiry": "高才通 enquiry: 武汉大学本科, 6年工作经验, 想了解申请流程",
+      "language": "zh-hans",
+      "bucket": "qualified",
+      "stream": "ttps_bc",
+      "urgent": false,
+      "escalate": false,
+      "escalation_reasons": [],
+      "status": "booked",
+      "first_response_minutes": 5,
+      "received_hours_ago": 170,
+      "booked_in_hours": 44,
+      "touches": [
+        {
+          "hours_ago": 170,
+          "type": "first_reply",
+          "note": "asked graduation year + full-time years, in zh-hans",
+          "body": "感谢您的咨询。高才通有一条看学历和工作经历的途径，为了给您准确的方向，想先确认两点：您的本科毕业年份，以及毕业后全职工作的年数。确认之后，我们可以安排一次简短通话，为您说明流程和费用：[booking link]。"
+        },
+        {
+          "hours_ago": 150,
+          "type": "inbound_reply",
+          "note": "answered, asked for a call",
+          "body": "2017年毕业，之后一直全职工作到现在。可以安排通话，周四下午方便。"
+        },
+        {
+          "hours_ago": 148,
+          "type": "booking_confirmed",
+          "note": "consultation booked"
+        }
+      ],
+      "summary": "Top Talent Pass enquiry in simplified Chinese, booked",
+      "next_action": "Reminder the day before the call",
+      "email": "w.chan.hk@gmail.com"
+    },
+    {
+      "id": "S-10",
+      "sample": true,
+      "channel": "email",
+      "phone": "+852 9··· ··47 (on file)",
+      "enquirer": "Mr. Wong",
+      "original_enquiry": "This is Mr. Wong, you're handling my wife's dependant visa. It expires in 10 days and nobody has called me back. This is unacceptable.",
+      "language": "en",
+      "bucket": "existing_client",
+      "stream": "none",
+      "urgent": true,
+      "escalate": true,
+      "escalation_reasons": [
+        "complaint",
+        "existing_client",
+        "deadline_2w"
+      ],
+      "status": "escalated",
+      "first_response_minutes": 2,
+      "received_hours_ago": 8,
+      "booked_in_hours": null,
+      "touches": [
+        {
+          "hours_ago": 8,
+          "type": "acknowledgment",
+          "body": "Hi Mr. Wong, thank you for writing, and I am sorry you have had to chase us. We understand the urgency of your wife's visa, and we have raised it with the consultant on your file, who will reach out to you today. If you would rather have a quick call now, you can reach us on [phone]."
+        }
+      ],
+      "summary": "Existing client complaint with a live deadline",
+      "next_action": "Named person calls today, human owns it",
+      "email": "wong.family.hk@gmail.com"
+    },
+    {
+      "id": "S-11",
+      "sample": true,
+      "channel": "form",
+      "enquirer": "D. Petrov",
+      "original_enquiry": "Husband accepted a Hong Kong job offer, I'd come with our kids aged 6 and 9. What do we need?",
+      "language": "en",
+      "bucket": "qualified",
+      "stream": "dependant",
+      "urgent": false,
+      "escalate": false,
+      "escalation_reasons": [],
+      "status": "attended",
+      "first_response_minutes": 6,
+      "received_hours_ago": 480,
+      "booked_in_hours": null,
+      "touches": [
+        {
+          "hours_ago": 480,
+          "type": "first_reply",
+          "note": "asked sponsor visa type + documents",
+          "body": "Hi D. Petrov, thanks for reaching out. A family joining a sponsored move usually has a dependant option to look at. Could you tell me the visa your husband will hold and roughly what documents you have to hand? Once we have that, we suggest a quick call to clarify the next step: [booking link]."
+        },
+        {
+          "hours_ago": 450,
+          "type": "inbound_reply",
+          "note": "answered, booked",
+          "body": "He will hold an employment visa, and we have passports plus the marriage and birth certificates ready. I booked a time for next week."
+        },
+        {
+          "hours_ago": 300,
+          "type": "consultation_attended",
+          "note": "attended, quote issued on the call"
+        }
+      ],
+      "summary": "Family dependant case, consultation attended",
+      "next_action": "With the consultant, out of the desk's hands"
+    },
+    {
+      "id": "S-12",
+      "sample": true,
+      "channel": "email",
+      "enquirer": "P. Ibrahim",
+      "original_enquiry": "How much for a working visa?",
+      "language": "en",
+      "bucket": "unclear",
+      "stream": "none",
+      "urgent": false,
+      "escalate": false,
+      "escalation_reasons": [],
+      "status": "awaiting_reply",
+      "first_response_minutes": 3,
+      "received_hours_ago": 20,
+      "booked_in_hours": null,
+      "touches": [
+        {
+          "hours_ago": 20,
+          "type": "first_reply",
+          "note": "held the fee line warmly, asked sponsor + background",
+          "body": "Thanks for getting in touch. The fee depends on which visa turns out to be the right one, so we give an exact quote once that is confirmed. Could you tell me whether you have a Hong Kong employer lined up, and a line on your background? Then we can identify the right visa for you."
+        }
+      ],
+      "summary": "Fee-first enquiry, openers asked",
+      "next_action": "Chase due tomorrow if silent",
+      "email": "p.ibrahim@gmail.com"
+    }
+  ]
+}

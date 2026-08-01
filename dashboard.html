@@ -1,0 +1,939 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Dashboard — Briska demo</title>
+<link rel="icon" href="assets/briska-mark.svg" type="image/svg+xml">
+<link rel="preload" as="font" type="font/woff2" href="assets/switzer-variable.woff2" crossorigin>
+<link rel="stylesheet" href="demo.css">
+<style>
+  :root { --sidew: 218px; }
+  .shell { display: flex; min-height: 100vh; }
+
+  /* ---- sidebar ---- */
+  .side {
+    width: var(--sidew); flex: none; background: var(--panel); border-right: 1px solid var(--line);
+    display: flex; flex-direction: column; padding: 16px 12px; position: sticky; top: 0; height: 100vh;
+    transition: width .15s ease;
+  }
+  .side.rail { width: 64px; }
+  .side.rail .lbl, .side.rail .badge, .side.rail .foot-h, .side.rail .demochip { display: none; }
+  .side-top { display: flex; align-items: center; gap: 10px; padding: 4px 8px 16px; }
+  .side-top img { width: 18px; height: 18px; flex: none; }
+  .side-top b { font-size: 15.5px; font-weight: 650; letter-spacing: -0.02em; white-space: nowrap; overflow: hidden; }
+  .side-top button { margin-left: auto; background: none; border: none; color: var(--text-3); cursor: pointer; padding: 3px; border-radius: 6px; flex: none; }
+  .side-top button:hover { color: var(--text); background: var(--elev); }
+  .side-top button svg { width: 17px; height: 17px; display: block; }
+  .side.rail .side-top { flex-direction: column; gap: 12px; }
+  .side.rail .side-top b { display: none; }
+  .side.rail .side-top button { margin: 0; }
+  .snav { display: flex; flex-direction: column; gap: 2px; }
+  .snav a {
+    display: flex; align-items: center; gap: 11px; color: var(--text-2); text-decoration: none;
+    font-size: 13.5px; font-weight: 570; padding: 9px 10px; border-radius: 9px; white-space: nowrap; cursor: pointer;
+  }
+  .snav a svg { width: 17px; height: 17px; flex: none; }
+  .snav a:hover { color: var(--text); background: var(--panel-2); }
+  .snav a.on { color: var(--text); background: var(--elev); }
+  .snav a.on svg { color: var(--accent); }
+  .badge { margin-left: auto; font-size: 11.5px; font-weight: 700; color: var(--accent-ink); background: var(--amber); border-radius: 999px; padding: 1px 8px; }
+  .side-foot { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--line); }
+  .foot-h { font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-3); padding: 2px 10px 6px; }
+  .demochip { margin: 10px 10px 0; font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--accent); background: var(--accent-bg); border: 1px solid var(--accent-line); border-radius: 999px; padding: 3px 9px; text-align: center; }
+
+  /* ---- main ---- */
+  main { flex: 1; min-width: 0; padding: 26px 30px 90px; }
+  .mwrap { max-width: 880px; margin: 0 auto; }
+  .mwrap:has(#pane-leads.on) { max-width: 1180px; }
+  .pane { display: none; }
+  .pane.on { display: block; }
+  .hero { margin: 2px 0 22px; }
+  .hero h1 { font-size: clamp(21px, 3vw, 27px); line-height: 1.25; font-weight: 640; letter-spacing: -0.02em; }
+  .hero h1 .hot { color: var(--amber); }
+  .hero h1 .calm { color: var(--accent); }
+  .pane > h1.ptitle, .ptitle { font-size: 21px; font-weight: 640; letter-spacing: -0.02em; margin-bottom: 4px; }
+  section { margin-top: 26px; }
+  .sec-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+  .sec-head h2 { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: var(--text-3); }
+  .sec-head h2 svg { width: 14px; height: 14px; color: var(--accent); flex: none; }
+  .sec-head .aside { font-size: 12.5px; color: var(--text-3); }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; }
+
+  /* overview: action summary cards */
+  .acts { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .actcard { display: flex; align-items: stretch; gap: 16px; padding: 16px 18px; cursor: pointer; border: 1px solid var(--line); background: var(--panel); border-radius: 16px; text-align: left; font: inherit; color: var(--text); min-width: 0; }
+  .actcard:hover { border-color: var(--line-2); background: var(--panel-2); }
+  .actcard.hot { border-color: var(--amber-line); background: var(--amber-bg); }
+  .actcard .left { flex: none; display: flex; flex-direction: column; min-width: 118px; }
+  .actcard .top { display: flex; align-items: center; gap: 9px; font-size: 13px; color: var(--text-2); }
+  .actcard .top svg { width: 16px; height: 16px; color: var(--amber); flex: none; }
+  .actcard.calm .top svg { color: var(--accent); }
+  .actcard .n { font-size: 30px; font-weight: 640; letter-spacing: -0.02em; margin: 8px 0 2px; }
+  .actcard .go { font-size: 12.5px; color: var(--text-3); margin-top: auto; }
+  .actcard.hot .go { color: var(--amber); font-weight: 600; }
+  .pv-list { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 7px; border-left: 1px solid var(--line); padding-left: 16px; }
+  .actcard.hot .pv-list { border-left-color: var(--amber-line); }
+  .pv { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--text-2); min-width: 0; }
+  .pv svg { width: 13px; height: 13px; flex: none; color: var(--text-3); }
+  .pv b { color: var(--text); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pv .why { color: var(--text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .pv-more { font-size: 11.5px; color: var(--text-3); }
+
+  /* overview: numbers */
+  .numbers { display: grid; grid-template-columns: 260px 1fr; gap: 12px; align-items: stretch; }
+  .stat { padding: 18px; display: flex; flex-direction: column; justify-content: center; }
+  .stat .stic { width: 34px; height: 34px; border-radius: 9px; background: var(--accent-bg); border: 1px solid var(--accent-line); display: flex; align-items: center; justify-content: center; margin-bottom: 13px; }
+  .stat .stic svg { width: 18px; height: 18px; color: var(--accent); }
+  .stat .l { font-size: 12.5px; color: var(--text-2); }
+  .stat .v { font-size: 34px; font-weight: 640; letter-spacing: -0.02em; line-height: 1.1; margin-top: 6px; }
+  .stat .v .u { font-size: 16px; color: var(--text-2); font-weight: 500; margin-left: 3px; }
+  .handled { padding: 18px 20px; }
+  .handled .hh { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-3); margin-bottom: 16px; }
+  .handled .hh svg { width: 15px; height: 15px; color: var(--accent); }
+  .hgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 20px; }
+  .hstat .hv { font-size: 25px; font-weight: 640; letter-spacing: -0.02em; line-height: 1; }
+  .hstat .hl { font-size: 12.5px; color: var(--text-2); margin-top: 6px; }
+  .hstat.you .hv { color: var(--amber); }
+  .range { display: inline-flex; align-items: center; gap: 7px; }
+  .range input {
+    background: var(--panel); border: 1px solid var(--line); color: var(--text-2);
+    border-radius: 7px; padding: 4px 9px; font: inherit; font-size: 12.5px; color-scheme: dark;
+  }
+  .range input:focus { outline: none; border-color: var(--accent-line); color: var(--text); }
+  .funcard { padding: 18px 22px 20px; margin-top: 12px; }
+  .fun-title { font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-3); margin-bottom: 13px; }
+  .frow { display: grid; grid-template-columns: 92px 1fr 112px; gap: 14px; align-items: center; padding: 5px 0; }
+  .frow .fl { font-size: 13px; color: var(--text-2); }
+  .ftrack { border-left: 1px solid var(--line-2); height: 18px; }
+  .fbar { display: block; height: 100%; background: var(--accent); border-radius: 0 4px 4px 0; min-width: 3px; }
+  .frow .fv { font-size: 13px; color: var(--text-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .frow .fv b { color: var(--text); font-size: 14.5px; font-weight: 640; margin-right: 7px; }
+  .frow .fv .fp { color: var(--text-3); font-size: 12px; }
+  .funcard .none { color: var(--text-3); font-size: 13px; }
+
+  /* to do */
+  .group { margin-bottom: 20px; }
+  .group-head { display: flex; align-items: center; gap: 9px; margin: 18px 0 10px; }
+  .group-head svg { width: 17px; height: 17px; color: var(--amber); }
+  .group-head b { font-size: 14.5px; font-weight: 640; }
+  .group-head .n { color: var(--text-3); font-weight: 500; }
+  .qrow { padding: 14px 18px 16px; }
+  .qrow + .qrow { border-top: 1px solid var(--line); }
+  .qtop { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .qwho { font-weight: 620; font-size: 14.5px; display: inline-flex; align-items: center; gap: 8px; }
+  .qwho svg { width: 14px; height: 14px; color: var(--text-3); }
+  .qwhen { font-size: 12px; color: var(--text-3); margin-left: auto; }
+  .markdone { margin-left: 8px; padding: 5px 12px; font-size: 12px; }
+  .qrow.done { opacity: .55; }
+  .qrow.flash { animation: rowflash 2.4s ease-out; }
+  @keyframes rowflash {
+    0% { box-shadow: inset 0 0 0 2px var(--amber); background: var(--amber-bg); }
+    100% { box-shadow: inset 0 0 0 2px transparent; background: transparent; }
+  }
+
+  .whatdo { border-radius: 11px; padding: 11px 14px; margin-top: 12px; display: flex; gap: 10px; align-items: flex-start; background: var(--amber-bg); border: 1px solid var(--amber-line); }
+  .whatdo.rev { background: var(--accent-bg); border-color: var(--accent-line); }
+  .whatdo svg { width: 16px; height: 16px; color: var(--amber); flex: none; margin-top: 2px; }
+  .whatdo.rev svg { color: var(--accent); }
+  .whatdo .wt { font-size: 13.5px; color: var(--text); line-height: 1.5; }
+  .whatdo .wt b { font-weight: 700; text-transform: uppercase; font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.06em; color: var(--amber); display: block; margin-bottom: 3px; }
+  .whatdo.rev .wt b { color: var(--accent); }
+  .readgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 11px; }
+  .rbox { background: var(--bg); border: 1px solid var(--line); border-radius: 9px; padding: 8px 11px; min-width: 0; }
+  .rbox .k { font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-3); margin-bottom: 3px; }
+  .rbox .v { font-size: 13px; font-weight: 640; color: var(--text); line-height: 1.35; }
+  .rbox.good .v { color: var(--accent); }
+  .rbox.warn .v { color: var(--amber); }
+  .rbox.dim .v { color: var(--text-2); font-weight: 550; }
+
+  /* the story timeline */
+  .convo { background: var(--bg); border: 1px solid var(--line); border-radius: 11px; padding: 13px 15px; margin-top: 11px; }
+  .convo .lbl { font-family: var(--mono); font-size: 10.5px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-3); margin-bottom: 12px; }
+  .steps { display: flex; flex-direction: column; }
+  .step { display: flex; gap: 12px; }
+  .snode { display: flex; flex-direction: column; align-items: center; width: 26px; flex: none; }
+  .si { width: 26px; height: 26px; flex: none; border-radius: 50%; background: var(--panel-2); border: 1px solid var(--line-2); display: flex; align-items: center; justify-content: center; color: var(--text-2); }
+  .si svg { width: 13px; height: 13px; }
+  .si.desk { background: var(--accent-bg); border-color: var(--accent-line); color: var(--accent); }
+  .si.you { background: var(--amber-bg); border-color: var(--amber-line); color: var(--amber); }
+  .si.guard { background: var(--red-bg); border-color: var(--red-line); color: var(--red); }
+  .snode .line { width: 2px; flex: 1; min-height: 10px; background: var(--line-2); margin: 4px 0; }
+  .step:last-child .snode .line { display: none; }
+  .sb { padding: 3px 0 16px; flex: 1; min-width: 0; }
+  .step:last-child .sb { padding-bottom: 2px; }
+  .st-title { font-size: 13.5px; color: var(--text); font-weight: 600; }
+  .st-when { font-size: 11.5px; color: var(--text-3); margin-left: 7px; font-weight: 400; }
+  .st-note { font-size: 12.5px; color: var(--text-2); margin-top: 2px; }
+  .reply { margin-top: 7px; background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 9px; padding: 10px 13px; font-size: 13px; color: var(--text-2); white-space: pre-wrap; line-height: 1.55; }
+  .reply.them { border-left-color: rgba(255,255,255,0.28); }
+  .reply.blocked { border-left-color: var(--red); text-decoration: line-through; text-decoration-color: rgba(248,113,113,0.5); }
+  .btn { font: inherit; font-size: 13px; font-weight: 650; border-radius: 999px; padding: 7px 15px; cursor: pointer; border: 1px solid transparent; white-space: nowrap; }
+  .btn.ghost { background: transparent; color: var(--text-2); border-color: var(--line-2); }
+  .btn.ghost:hover { color: var(--text); border-color: var(--text-3); }
+  .btn.send { background: var(--accent); color: var(--accent-ink); }
+  .btn.send:hover { background: var(--accent-hi); }
+  .btn.send:disabled { opacity: .45; cursor: default; }
+  .qactions { display: flex; align-items: center; gap: 10px; margin-top: 11px; flex-wrap: wrap; }
+  .qmeta { font-size: 12px; color: var(--text-3); }
+  .qerr { color: var(--amber); font-size: 13px; margin-top: 8px; }
+  .qdetail { margin-top: 12px; }
+  .qbox { background: var(--bg); border: 1px solid var(--line); border-radius: 11px; padding: 12px 15px; font-size: 13.5px; line-height: 1.6; white-space: pre-wrap; }
+  .qbox .lbl { display: block; font-family: var(--mono); font-size: 10.5px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-3); margin-bottom: 6px; white-space: normal; }
+  .qbox + .qbox { margin-top: 8px; }
+  .allclear { padding: 30px 20px; text-align: center; }
+  .allclear .big { font-size: 17px; font-weight: 620; }
+  .allclear .big .chk { color: var(--accent); }
+  .allclear p { color: var(--text-3); font-size: 13px; margin-top: 5px; }
+  .more { padding: 12px 18px; border-top: 1px solid var(--line); }
+  .more button { background: none; border: none; color: var(--text-2); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; padding: 0; }
+  .more button:hover { color: var(--text); }
+
+  /* activity */
+  .feed { padding: 6px 12px 10px; }
+  .fitem { display: grid; grid-template-columns: 54px 1fr 16px; align-items: center; gap: 12px; padding: 11px 8px; border-radius: 9px; cursor: pointer; }
+  .fitem:hover { background: var(--panel-2); }
+  .fitem + .fitem { border-top: 1px solid var(--line); }
+  .fitem:hover + .fitem, .fitem:hover { border-top-color: transparent; }
+  .ftime { font-family: var(--mono); font-size: 11.5px; color: var(--text-3); font-variant-numeric: tabular-nums; }
+  .fbody { font-size: 13.5px; line-height: 1.5; color: var(--text-2); }
+  .fbody .obj { font-weight: 600; color: var(--text); }
+  .fbody .obj svg { width: 13px; height: 13px; color: var(--text-3); vertical-align: -2px; margin-right: 2px; }
+  .fbody .dot { color: var(--accent); margin-right: 4px; }
+  .fgo { color: var(--text-3); opacity: 0; font-size: 15px; }
+  .fitem:hover .fgo { opacity: 1; }
+
+  /* leads */
+  .filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+  .filters button { font: inherit; font-size: 12.5px; font-weight: 600; color: var(--text-2); background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 5px 14px; cursor: pointer; }
+  .filters button:hover { color: var(--text); }
+  .filters button.on { color: var(--text); background: var(--elev); border-color: var(--line-2); }
+  .filters button .n { color: var(--text-3); font-weight: 500; }
+  .tablewrap { overflow-x: auto; }
+  @media (min-width: 1000px) { .tablewrap { overflow-x: visible; } }
+  table { border-collapse: collapse; width: 100%; min-width: 840px; }
+  th {
+    text-align: left; font-family: var(--mono); font-size: 10.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--text-2); padding: 11px 16px; border-bottom: 1px solid var(--line-2);
+    position: sticky; top: 0; z-index: 2; background: var(--elev);
+  }
+  th:first-child { border-top-left-radius: 16px; }
+  th:last-child { border-top-right-radius: 16px; }
+  td { padding: 12px 16px; border-bottom: 1px solid var(--line); vertical-align: top; font-size: 13.5px; }
+  td.when { white-space: nowrap; }
+  tbody tr.lead { cursor: pointer; }
+  tbody tr.lead:hover { background: var(--panel-2); }
+  tbody tr:last-child td { border-bottom: none; }
+  .lead-cell { min-width: 210px; }
+  .lead-cell .who { font-weight: 620; display: inline-flex; align-items: center; gap: 8px; }
+  .lead-cell .who svg { width: 13px; height: 13px; color: var(--text-3); }
+  .lead-cell .what { color: var(--text-3); font-size: 12.5px; margin-top: 2px; }
+  .sampletag { font-family: var(--mono); font-size: 9.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-3); background: var(--panel-2); border: 1px solid var(--line-2); border-radius: 999px; padding: 1px 7px; }
+  .st { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; color: var(--text-2); }
+  .st i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; background: var(--text-3); }
+  .st.booked { color: var(--accent); } .st.booked i { background: var(--accent); }
+  .st.closed { color: var(--text-3); } .st.closed i { background: var(--text-3); opacity: .5; }
+  .did { color: var(--text-3); }
+  .next { color: var(--text-2); }
+  .actor { display: inline-flex; align-items: center; gap: 5px; font-size: 10.5px; font-weight: 700; border-radius: 999px; padding: 1px 8px; white-space: nowrap; }
+  .actor svg { width: 11px; height: 11px; }
+  .actor.you { color: var(--amber); background: var(--amber-bg); border: 1px solid var(--amber-line); }
+  .actor.desk { color: var(--accent); background: var(--accent-bg); border: 1px solid var(--accent-line); }
+  tr.expand td { background: var(--panel-2); padding: 4px 18px 16px; }
+
+  @media (max-width: 900px) { .numbers { grid-template-columns: 1fr; } }
+  @media (max-width: 760px) {
+    .side { position: fixed; z-index: 10; height: 100vh; }
+    .side:not(.rail) { box-shadow: 0 0 40px rgba(0,0,0,.5); }
+    main { padding-left: 88px; }
+    .acts { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 600px) { .readgrid { grid-template-columns: repeat(2, 1fr); } }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="ic-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10.5 9-7.5 9 7.5V20a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 20z"/><path d="M9.5 21.5v-7h5v7"/></symbol>
+  <symbol id="ic-todo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="m8 12.5 2.6 2.6L16.5 9"/></symbol>
+  <symbol id="ic-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12h4l3-7.5 5 15 3-7.5h4"/></symbol>
+  <symbol id="ic-people" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.2 3.4-5 6.5-5s5.7 1.8 6.5 5"/><path d="M16 5.1a3.5 3.5 0 0 1 0 5.8M18.5 15.2c1.6.8 2.7 2.2 3 4.3"/></symbol>
+  <symbol id="ic-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16.5v3a1.9 1.9 0 0 1-2.1 1.9A19 19 0 0 1 2.6 5.1 1.9 1.9 0 0 1 4.5 3h3a1.9 1.9 0 0 1 1.9 1.6c.12.9.34 1.8.65 2.6a1.9 1.9 0 0 1-.43 2L8.3 10.5a15.2 15.2 0 0 0 5.2 5.2l1.3-1.3a1.9 1.9 0 0 1 2-.43c.84.31 1.7.53 2.6.65A1.9 1.9 0 0 1 21 16.5z"/></symbol>
+  <symbol id="ic-email" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4.5" width="19" height="15" rx="2.5"/><path d="m3.5 7.5 8.5 5.8 8.5-5.8"/></symbol>
+  <symbol id="ic-wa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 1 1 16.1-3.8z"/><path d="M9 9.5c.5 2.4 2.6 4.5 5 5l1.5-1.5"/></symbol>
+  <symbol id="ic-wc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 10h.01M12 10h.01M16 10h.01"/></symbol>
+  <symbol id="ic-web" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M2.5 12h19"/><path d="M12 2.5a14.5 14.5 0 0 1 3.8 9.5 14.5 14.5 0 0 1-3.8 9.5 14.5 14.5 0 0 1-3.8-9.5A14.5 14.5 0 0 1 12 2.5z"/></symbol>
+  <symbol id="ic-collapse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M9.5 4v16"/></symbol>
+  <symbol id="ic-bolt-sm" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></symbol>
+  <symbol id="ic-doc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2.5H6.5A1.5 1.5 0 0 0 5 4v16a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 20V7.5z"/><path d="M14 2.5V7.5H19"/><path d="M9 12.5h6M9 16h6"/></symbol>
+  <symbol id="ic-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m4 13 5 5L20 7"/></symbol>
+  <symbol id="ic-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></symbol>
+  <symbol id="ic-layers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 3 8l9 5 9-5z"/><path d="M3 13l9 5 9-5M3 16.5l9 5 9-5"/></symbol>
+  <symbol id="ic-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></symbol>
+  <symbol id="ic-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2.5 20h19z"/><path d="M12 9.5v4.5"/><path d="M12 17.2v.01"/></symbol>
+  <symbol id="ic-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5 4 6v5.5c0 5 3.4 8.6 8 10 4.6-1.4 8-5 8-10V6z"/></symbol>
+</defs></svg>
+
+<div class="shell">
+  <aside class="side" id="side">
+    <div class="side-top">
+      <img src="assets/briska-mark.svg" alt=""><b>[Firm]</b>
+      <button id="collapse" title="Collapse the menu" aria-label="Collapse the menu"><svg><use href="#ic-collapse"/></svg></button>
+    </div>
+    <nav class="snav" id="snav">
+      <a data-pane="overview" class="on"><svg><use href="#ic-home"/></svg><span class="lbl">Overview</span></a>
+      <a data-pane="todo"><svg><use href="#ic-todo"/></svg><span class="lbl">To do</span><span class="badge" id="todo-badge" style="display:none"></span></a>
+      <a data-pane="leads"><svg><use href="#ic-people"/></svg><span class="lbl">Leads</span></a>
+    </nav>
+    <div class="side-foot">
+      <div class="foot-h">Pages</div>
+      <nav class="snav">
+        <a href="/"><svg><use href="#ic-bolt-sm"/></svg><span class="lbl">Enquiry desk</span></a>
+        <a href="/report"><svg><use href="#ic-doc"/></svg><span class="lbl">Weekly report</span></a>
+        <a href="/about"><svg><use href="#ic-shield"/></svg><span class="lbl">How it works</span></a>
+      </nav>
+      <div class="demochip">Briska demo &middot; sample data</div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="mwrap">
+
+      <div class="topbar">
+        <a class="brand" href="https://briska.ai"><img src="assets/briska-mark.svg" alt=""> Briska <span class="co">demo</span></a>
+        <div class="tabs">
+          <a href="/">Enquiry desk</a>
+          <a href="/dashboard" class="here">Dashboard</a>
+          <a href="/report">Report</a>
+          <a href="/about">How it works</a>
+        </div>
+      </div>
+
+      <div class="pane on" id="pane-overview">
+        <div class="hero" id="hero"></div>
+        <div class="acts" id="acts"></div>
+        <section>
+          <div class="sec-head"><h2><svg><use href="#ic-bolt-sm"/></svg>AI assistant in numbers</h2><span class="aside range"><input type="date" id="d-from"> <span>to</span> <input type="date" id="d-to"></span></div>
+          <div class="numbers">
+            <div class="card stat" id="respstat"></div>
+            <div class="card handled" id="handled"></div>
+          </div>
+          <div class="card funcard" id="funnel"></div>
+        </section>
+        <section>
+          <div class="sec-head"><h2><svg><use href="#ic-pulse"/></svg>Recent activity</h2></div>
+          <div class="card feed" id="recent"></div>
+        </section>
+      </div>
+
+      <div class="pane" id="pane-todo">
+        <h1 class="ptitle" id="todo-title">To do</h1>
+        <div id="todo-body"></div>
+      </div>
+
+      <div class="pane" id="pane-leads">
+        <h1 class="ptitle">Leads</h1>
+        <div class="filters" id="filters" style="margin-top:16px"></div>
+        <div class="card tablewrap">
+          <table>
+            <thead><tr><th>Lead</th><th>Status</th><th>Owner</th><th>Last action</th><th>When</th><th>Next</th></tr></thead>
+            <tbody id="leadrows"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script src="leads.js"></script>
+<script>
+  /* plain-English names for every follow-up type */
+  const FOLLOWUP_LABEL = {
+    chase_1: '1st follow-up', chase_2: '2nd follow-up', final_chase: 'final follow-up',
+    booking_reminder: 'appointment reminder', no_show_rebook: 'rebooking offer', nurture: 'stay-in-touch note'
+  };
+  /* activity-feed phrasing (assistant actions only) */
+  const TOUCH_LABEL = {
+    first_reply: ['Sent the first reply to'],
+    acknowledgment: ['Acknowledged', 'and flagged them to you'],
+    guardrail_block: ['Held a draft for', 'the safety filter escalated it'],
+    chase_1: ['Sent the 1st follow-up to'], chase_2: ['Sent the 2nd follow-up to'],
+    final_chase: ['Sent the final follow-up to', 'then the desk stops'],
+    booking_reminder: ['Sent the appointment reminder to'],
+    no_show_rebook: ['Offered a new time to'], nurture: ['Sent a stay-in-touch note to'],
+    booking_confirmed: ['Booked a consultation for']
+  };
+  /* short titles for the story timeline; [title, actor] actor = desk | guard | they */
+  const TOUCH_STEP = {
+    first_reply: ['First reply sent', 'desk'],
+    acknowledgment: ['Acknowledged and flagged to you', 'desk'],
+    guardrail_block: ['Safety filter held the draft, escalated', 'guard'],
+    chase_1: ['1st follow-up sent', 'desk'], chase_2: ['2nd follow-up sent', 'desk'],
+    final_chase: ['Final follow-up sent, thread closed warmly', 'desk'],
+    booking_reminder: ['Appointment reminder sent', 'desk'],
+    no_show_rebook: ['Rebooking offer sent', 'desk'], nurture: ['Stay-in-touch note sent', 'desk'],
+    booking_confirmed: ['Consultation booked', 'desk'],
+    consultation_attended: ['Consultation held', 'they'],
+    inbound_reply: ['They replied', 'they'], no_show: ['They missed the booked call', 'they'],
+    marked_done: ['Marked done by you', 'you']
+  };
+  /* which touches are things the assistant DID (shown in Activity) */
+  const AGENT_TOUCHES = new Set(['first_reply','acknowledgment','guardrail_block','chase_1','chase_2','final_chase','booking_reminder','no_show_rebook','nurture','booking_confirmed']);
+  const CHASES = new Set(['chase_1','chase_2','final_chase']);
+  const REASON = {
+    overstay: 'they disclosed an overstay', complaint: 'it is a complaint', existing_client: 'they are an existing client',
+    deadline_2w: 'there is a deadline inside two weeks', status_expiry_4w: 'their permission to stay is running out',
+    refused_application: 'a past application was refused', payment_risk: 'it shows a payment risk sign',
+    press_or_regulator: 'it is a press or regulator contact', legal_threat: 'it mentions legal action', minor: 'a minor is involved',
+    'guardrail block': 'the safety filter held the draft'
+  };
+  const REASON_SHORT = {
+    overstay: 'Overstay', complaint: 'Complaint', existing_client: 'Existing client',
+    deadline_2w: 'Deadline inside 2 weeks', status_expiry_4w: 'Stay running out',
+    refused_application: 'Past refusal', payment_risk: 'Payment risk',
+    press_or_regulator: 'Press or regulator', low_confidence: 'Unclear', 'guardrail block': 'Held by the safety filter'
+  };
+  /* the goal for each escalation, stated without assuming a contact method */
+  const ESCAL_WHY = {
+    overstay: 'Understand where they stand today and agree the immediate next step.',
+    complaint: 'Clarify expectations and agree the next step.',
+    existing_client: 'Give them a real update on their case.',
+    deadline_2w: 'A deadline is inside two weeks, so own it today.',
+    status_expiry_4w: 'Their permission to stay is running out, so own it today.',
+    payment_risk: 'Tell them not to transfer any money and check what is going on.',
+    refused_application: 'Review the refused application before anything goes in writing.',
+    press_or_regulator: 'Route this to the principal. Do not comment.',
+    'guardrail block': 'Review the held draft and reply in your own words.'
+  };
+  const CH = {
+    email: ['ic-email', 'email'], whatsapp: ['ic-wa', 'WhatsApp'], form: ['ic-web', 'your website form'],
+    wechat: ['ic-wc', 'WeChat'], demo: ['ic-email', 'email']
+  };
+  const CH_SHORT = { email: 'Email', whatsapp: 'WhatsApp', form: 'Website form', wechat: 'WeChat', demo: 'Email' };
+  /* per-vertical labels: a new vertical swaps STREAM_LABEL, FIT_LABEL and ACTION_MAP, nothing else */
+  const STREAM_LABEL = { ttps_a: 'Top Talent Pass A', ttps_bc: 'Top Talent Pass B/C', qmas: 'QMAS', gep: 'Employment visa', dependant: 'Dependant visa', other: 'Other' };
+  const FIT_LABEL = 'Potential visa';
+  const LANG_LABEL = { en: 'English', 'zh-hant': '繁體中文', 'zh-hans': '简体中文' };
+
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function chIcon(ch){ return '<svg aria-hidden="true"><use href="#' + (CH[ch]||CH.email)[0] + '"/></svg>'; }
+  function chName(ch){ return (CH[ch]||CH.email)[1]; }
+  function rel(iso, now){
+    const h = (now - new Date(iso)) / 3600000;
+    if (h < 0){ const f = -h; return 'in ' + (f < 24 ? Math.round(f) + 'h' : Math.round(f/24) + 'd'); }
+    if (h < 1) return Math.max(1, Math.round(h*60)) + 'm ago';
+    if (h < 24) return Math.round(h) + 'h ago';
+    return Math.round(h/24) + 'd ago';
+  }
+  function median(xs){ if(!xs.length) return null; const s=[...xs].sort((a,b)=>a-b); const m=Math.floor(s.length/2); return s.length%2?s[m]:(s[m-1]+s[m])/2; }
+
+  /* what the owner can actually do about an escalation, given the contact we hold */
+  function escalationAction(l){
+    const why = ESCAL_WHY[(l.escalation_reasons||[])[0]] || 'Clarify the situation and agree the next step.';
+    if (l.phone) return { method: 'call', short: 'Call them today', full: 'Call them today on ' + l.phone + '. ' + why };
+    if (l.channel === 'whatsapp' || l.channel === 'wechat')
+      return { method: 'thread', short: 'Reply on ' + chName(l.channel) + ' now', full: 'Reply on their ' + chName(l.channel) + ' thread now, you can message or call from there. ' + why };
+    return { method: 'wait', short: 'Urgent reply sent, watch for a number',
+      full: "You only have their email, so you cannot call yet. The desk has already replied urgently, asking them to call you today on [phone]. " + why + ' Watch for their reply and call the moment a number comes in.' };
+  }
+
+  function needsList(leads, now){
+    const calls = [], approvals = [];
+    leads.forEach(l => {
+      if (l.done) return;
+      if (l.escalate && l.status === 'escalated') calls.push(l);
+      else if (l.followup && new Date(l.followup.due) <= now) approvals.push(l);
+    });
+    calls.sort((a,b) => a.received < b.received ? -1 : 1);
+    approvals.sort((a,b) => a.followup.due < b.followup.due ? -1 : 1);
+    return { calls, approvals };
+  }
+
+  /* ---------- sidebar ---------- */
+  const side = document.getElementById('side');
+  document.getElementById('collapse').addEventListener('click', () => {
+    side.classList.toggle('rail');
+    try { localStorage.setItem('deskRail', side.classList.contains('rail') ? '1' : ''); } catch(e){}
+  });
+  try { if (localStorage.getItem('deskRail') === '1') side.classList.add('rail'); } catch(e){}
+
+  function isPaneActive(name){ return document.getElementById('pane-' + name).classList.contains('on'); }
+  function showPane(name){
+    document.querySelectorAll('.pane').forEach(p => p.classList.toggle('on', p.id === 'pane-' + name));
+    document.querySelectorAll('#snav a').forEach(a => a.classList.toggle('on', a.dataset.pane === name));
+    if (location.hash !== '#' + name) history.replaceState(null, '', '#' + name);
+    if (name === 'todo') runApproveQueue();
+  }
+  document.querySelectorAll('#snav a').forEach(a => a.addEventListener('click', () => showPane(a.dataset.pane)));
+  let FOCUS_ID = null;
+  function paneFromHash(){
+    const name = location.hash.replace('#','');
+    if (name.startsWith('todo-')){
+      FOCUS_ID = decodeURIComponent(name.slice(5));
+      showPane('todo');
+      focusTodoRow();
+      return;
+    }
+    if (['overview','todo','leads'].includes(name)) showPane(name);
+  }
+  window.addEventListener('hashchange', paneFromHash);
+  /* scroll to and flash the To do row a daily-message line points at */
+  function focusTodoRow(){
+    if (!FOCUS_ID) return;
+    let row = document.querySelector('.qrow[data-id="' + FOCUS_ID + '"]');
+    if (!row){
+      document.querySelectorAll('#todo-body .more button').forEach(b => b.click());
+      row = document.querySelector('.qrow[data-id="' + FOCUS_ID + '"]');
+    }
+    if (!row) return;
+    FOCUS_ID = null;
+    row.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    row.classList.add('flash');
+    setTimeout(() => row.classList.remove('flash'), 2500);
+  }
+
+  /* ---------- overview ---------- */
+  function renderHero(leads, now){
+    const { calls, approvals } = needsList(leads, now);
+    const n = calls.length + approvals.length;
+    const hero = document.getElementById('hero');
+    if (!n){ hero.innerHTML = '<h1><span class="calm">Nothing requires your input.</span></h1>'; }
+    else hero.innerHTML = '<h1><span class="hot">' + n + ' thing' + (n>1?'s':'') + '</span> requiring your input.</h1>';
+    const badge = document.getElementById('todo-badge');
+    badge.style.display = n ? '' : 'none';
+    badge.textContent = n;
+    document.getElementById('acts').innerHTML =
+      actCard('Needs you now', 'ic-alert', calls, l => REASON_SHORT[(l.escalation_reasons||[])[0]] || 'For a consultant') +
+      actCard('Replies to approve', 'ic-email', approvals, l => FOLLOWUP_LABEL[l.followup.type] || l.followup.type);
+    document.querySelectorAll('.actcard').forEach(b => b.addEventListener('click', () => showPane('todo')));
+  }
+  function actCard(label, icon, items, why){
+    const n = items.length;
+    const cls = n ? 'hot' : 'calm';
+    let right;
+    if (!n){
+      right = '<span class="pv-list"><span class="pv-more">Nothing waiting</span></span>';
+    } else {
+      const rows = items.slice(0, 3).map(l =>
+        '<span class="pv">' + chIcon(l.channel) + '<b>' + esc(l.enquirer) + '</b><span class="why">' + esc(why(l)) + '</span></span>').join('');
+      const more = n > 3 ? '<span class="pv-more">+ ' + (n - 3) + ' more in To do</span>' : '';
+      right = '<span class="pv-list">' + rows + more + '</span>';
+    }
+    return '<button class="actcard ' + cls + '"><span class="left"><span class="top"><svg><use href="#' + icon + '"/></svg>' + label + '</span>' +
+      '<span class="n">' + n + '</span><span class="go">' + (n ? 'Open the list' : 'Nothing waiting') + '</span></span>' + right + '</button>';
+  }
+
+  function dayStart(v){ return new Date(v + 'T00:00'); }
+  function dayEnd(v){ return new Date(v + 'T23:59'); }
+  function renderNumbers(leads){
+    const from = document.getElementById('d-from').value;
+    const to = document.getElementById('d-to').value;
+    const inRange = leads.filter(l => {
+      const r = new Date(l.received);
+      return (!from || r >= dayStart(from)) && (!to || r <= dayEnd(to));
+    });
+    const received = inRange.length;
+    const answered = inRange.filter(l => (l.touches||[]).length > 0).length;
+    const qualified = inRange.filter(l => l.bucket === 'qualified').length;
+    const booked = inRange.filter(l => l.status === 'booked' || l.status === 'attended').length;
+    const escalated = inRange.filter(l => l.escalate).length;
+    const actions = inRange.reduce((sum, l) => sum + (l.touches||[]).filter(t => AGENT_TOUCHES.has(t.type)).length, 0);
+    const resp = inRange.map(l => l.first_response_minutes).filter(v => v != null);
+    const med = median(resp);
+    document.getElementById('respstat').innerHTML =
+      '<div class="stic"><svg><use href="#ic-clock"/></svg></div>' +
+      '<div class="l">Response time</div><div class="v">' + (med==null?'&ndash;':Math.round(med)) + '<span class="u">min</span></div>';
+    document.getElementById('handled').innerHTML =
+      '<div class="hh"><svg><use href="#ic-layers"/></svg>What the assistant handled</div>' +
+      '<div class="hgrid">' +
+        hstat(received, 'Enquiries read and sorted') +
+        hstat(actions, 'Replies &amp; follow-ups written') +
+        hstat(booked, 'Consultations booked') +
+        hstat(escalated, 'Passed to you', escalated ? 'you' : '') +
+      '</div>';
+    const el = document.getElementById('funnel');
+    if (!received){ el.innerHTML = '<span class="none">No enquiries between these dates.</span>'; return; }
+    const rows = [['Received', received], ['Answered', answered], ['Qualified', qualified], ['Booked', booked]];
+    el.innerHTML = '<div class="fun-title">From enquiry to booked consultation</div>' +
+      rows.map(([label, n]) => {
+        const pct = Math.round(n / received * 100);
+        return '<div class="frow" title="' + label + ': ' + n + ' of ' + received + '">' +
+          '<span class="fl">' + label + '</span>' +
+          '<span class="ftrack"><span class="fbar" style="width:' + Math.max(pct, 2) + '%"></span></span>' +
+          '<span class="fv"><b>' + n + '</b><span class="fp">' + pct + '% of received</span></span></div>';
+      }).join('');
+  }
+  function hstat(v, label, cls){
+    return '<div class="hstat ' + (cls||'') + '"><div class="hv">' + v + '</div><div class="hl">' + label + '</div></div>';
+  }
+  let rangeInit = false;
+  function initRange(leads){
+    if (rangeInit) return;
+    rangeInit = true;
+    const fmt = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    const to = new Date(NOW);
+    const from = new Date(NOW); from.setDate(from.getDate() - 6);
+    document.getElementById('d-to').value = fmt(to);
+    document.getElementById('d-from').value = fmt(from);
+    ['d-from','d-to'].forEach(id => document.getElementById(id).addEventListener('change', () => renderNumbers(LEADS)));
+  }
+
+  /* ---------- the client card (same read as the enquiry demo) ---------- */
+  function rbox(k, v, cls){
+    return '<div class="rbox ' + (cls||'') + '"><div class="k">' + esc(k) + '</div><div class="v">' + esc(v) + '</div></div>';
+  }
+  function cardHTML(l){
+    const TYPE = { qualified: ['New lead','good'], unclear: ['Possible lead',''], existing_client: ['Existing client','warn'], no_fit: ['No visa fits','dim'], not_an_enquiry: ['Vendor spam','dim'] };
+    const t = TYPE[l.bucket] || [l.bucket || 'Enquiry', ''];
+    const hasStream = l.stream && l.stream !== 'none';
+    let urg = 'None';
+    if (l.escalate) urg = l.urgent ? 'High, consultant today' : 'With a consultant';
+    else if (l.urgent) urg = 'High, same day';
+    const b = [
+      rbox('Type', t[0], t[1]),
+      rbox(FIT_LABEL, hasStream ? (STREAM_LABEL[l.stream] || l.stream) : 'Not clear yet', hasStream ? 'good' : 'dim'),
+      rbox('Urgency', urg, l.urgent || l.escalate ? 'warn' : 'dim'),
+      rbox('Language', LANG_LABEL[l.language] || l.language || 'English', 'dim'),
+      rbox('Came in via', CH_SHORT[l.channel] || 'Email', 'dim'),
+      rbox('Phone', l.phone || 'Not given', l.phone ? '' : 'dim'),
+      rbox('Email', l.email || 'Not given', l.email ? '' : 'dim')
+    ];
+    return '<div class="readgrid">' + b.join('') + '</div>';
+  }
+
+  /* ---------- the story timeline: bolt = the assistant, shield = the safety filter ---------- */
+  function triageStep(l){
+    if (l.escalate){
+      const r = (l.escalation_reasons||[])[0];
+      return 'Flagged as urgent, ' + (r ? (REASON[r] || r.replace(/_/g,' ')) : 'for a consultant');
+    }
+    if (l.bucket === 'qualified') return 'Read as a lead' + (l.stream && l.stream !== 'none' ? ' for ' + (STREAM_LABEL[l.stream] || l.stream) : '');
+    if (l.bucket === 'unclear') return 'Read as a possible lead, key details missing';
+    if (l.bucket === 'not_an_enquiry') return 'Filed as spam, no reply needed';
+    if (l.bucket === 'existing_client') return 'Recognised as an existing client';
+    if (l.bucket === 'no_fit') return 'Reviewed, no visa fits on the face of it';
+    return 'Reviewed';
+  }
+  function stepHTML(actor, ch, title, when, now, body, note, blocked){
+    let icon, cls = '';
+    if (actor === 'desk'){ icon = '<svg><use href="#ic-bolt-sm"/></svg>'; cls = 'desk'; }
+    else if (actor === 'guard'){ icon = '<svg><use href="#ic-shield"/></svg>'; cls = 'guard'; }
+    else if (actor === 'you'){ icon = '<svg><use href="#ic-user"/></svg>'; cls = 'you'; }
+    else if (actor === 'msg'){ icon = chIcon(ch); }
+    else { icon = '<svg><use href="#ic-user"/></svg>'; }
+    let h = '<div class="step"><span class="snode"><span class="si ' + cls + '">' + icon + '</span><span class="line"></span></span><div class="sb">';
+    h += '<div class="st-title">' + esc(title) + '<span class="st-when">' + rel(when, now) + '</span></div>';
+    if (note) h += '<div class="st-note">' + esc(note) + '</div>';
+    if (body) h += '<div class="reply' + (actor === 'desk' ? '' : actor === 'guard' ? ' blocked' : ' them') + '">' + esc(body) + '</div>';
+    return h + '</div></div>';
+  }
+  function stepsHTML(l, now){
+    let h = '<div class="convo"><div class="lbl">Their story</div><div class="steps">';
+    h += stepHTML('msg', l.channel, 'Enquiry received via ' + chName(l.channel), l.received, now, l.original_enquiry, null);
+    h += stepHTML('desk', null, triageStep(l), l.received, now, null, null);
+    (l.touches || []).forEach(t => {
+      const def = TOUCH_STEP[t.type] || ['Handled', 'desk'];
+      const actor = def[1] === 'desk' || def[1] === 'you' || def[1] === 'guard' ? def[1] : (t.type === 'inbound_reply' ? 'msg' : 'them');
+      const title = (t.type === 'marked_done' && t.action) ? t.action + ', marked done' : def[0];
+      h += stepHTML(actor, l.channel, title, t.at, now, t.body, t.body ? null : t.note);
+    });
+    return h + '</div></div>';
+  }
+
+  /* ---------- to do ---------- */
+  function actionText(l){
+    const ft = FOLLOWUP_LABEL[l.followup.type] || l.followup.type;
+    return 'Read the ' + ft + ' drafted below, then approve it or edit it first.';
+  }
+  function qtopHTML(l, whenLabel, btn){
+    const b = btn || { label: 'Mark done', title: 'Clears this from your list and the daily message' };
+    return '<div class="qtop"><span class="qwho">' + chIcon(l.channel) + esc(l.enquirer) + '</span>' +
+      '<span class="qwhen">' + esc(whenLabel) + '</span><button class="btn ghost markdone" title="' + esc(b.title) + '">' + esc(b.label) + '</button></div>';
+  }
+  function doneAction(l){
+    if (l.escalate && l.status === 'escalated'){
+      const a = escalationAction(l);
+      if (a.method === 'call') return 'You called them';
+      if (a.method === 'thread') return 'You replied on ' + chName(l.channel);
+      return 'You handled it off-thread';
+    }
+    return 'You dismissed the draft';
+  }
+  function wireDone(row, l){
+    row.querySelector('.markdone').addEventListener('click', () => markDone(l.id, doneAction(l)));
+  }
+  async function markDone(id, action){
+    DeskStore.markDone(id, action);
+    await load();
+  }
+
+  function callRow(l, now){
+    const row = document.createElement('div'); row.className = 'qrow'; row.dataset.id = l.id;
+    const a = escalationAction(l);
+    const icon = a.method === 'call' ? '#ic-phone' : (a.method === 'thread' ? '#' + (CH[l.channel]||CH.email)[0] : '#ic-alert');
+    row.innerHTML =
+      qtopHTML(l, 'came in ' + rel(l.received, now)) +
+      '<div class="whatdo"><svg><use href="' + icon + '"/></svg><div class="wt"><b>What to do</b>' + esc(a.full) + '</div></div>' +
+      cardHTML(l) +
+      stepsHTML(l, now);
+    wireDone(row, l);
+    return row;
+  }
+
+  const DRAFT_CACHE = {};
+  function draftHTML(l, c){
+    const where = l.channel === 'form' ? 'as an email to the address they left on your form' : 'as a reply on their ' + chName(l.channel) + ' thread';
+    if (!c.draft) return '<div class="qbox">The desk held this one: ' + esc(c.hold_reason || 'a person owns the thread') + '.</div>';
+    return '<div class="qbox"><span class="lbl">Drafted, ready for you to review and send ' + esc(where) + '</span>' + esc(c.draft) + '</div>' +
+      '<div class="qactions"><button class="btn send">Approve &amp; send</button><button class="btn ghost">Edit first</button></div>';
+  }
+  function showDraft(l, out, c){
+    out.innerHTML = draftHTML(l, c);
+    const btn = out.querySelector('.btn.send');
+    if (btn) btn.addEventListener('click', () => approveSend(l, c, btn));
+  }
+  async function approveSend(l, c, btn){
+    btn.disabled = true;
+    btn.textContent = 'Approving...';
+    DeskStore.recordApproval(l.id, l.followup.type, c.draft);
+    delete DRAFT_CACHE[l.id + ':' + l.followup.type];
+    await load();
+  }
+  async function autoDraft(l, out){
+    const key = l.id + ':' + l.followup.type;
+    if (DRAFT_CACHE[key]){ showDraft(l, out, DRAFT_CACHE[key]); return; }
+    const ft = FOLLOWUP_LABEL[l.followup.type] || l.followup.type;
+    const t0 = Date.now();
+    out.innerHTML = '<div class="qbox"><span class="lbl">The ' + esc(ft) + ', being written</span><span class="qmeta" data-tick>The desk is writing it...</span></div>';
+    const tick = setInterval(() => {
+      const el = out.querySelector('[data-tick]');
+      if (el) el.textContent = 'The desk is writing it... ' + Math.round((Date.now()-t0)/1000) + 's';
+    }, 1000);
+    try {
+      const res = await fetch('/api/followup', { method:'POST', headers: DeskStore.apiHeaders(),
+        body: JSON.stringify({ type: l.followup.type, lead: DeskStore.followupPayload(l) }) });
+      const data = await res.json();
+      if (data.error){ out.innerHTML = '<div class="qerr">' + esc(data.error) + '</div>'; return; }
+      DRAFT_CACHE[key] = data.card || {};
+      showDraft(l, out, DRAFT_CACHE[key]);
+    } catch(e){ out.innerHTML = '<div class="qerr">Could not reach the demo backend. Give it a second and try again.</div>'; }
+    finally { clearInterval(tick); }
+  }
+
+  let DETAIL_BY_ID = {};
+  function approveRow(l, now){
+    const row = document.createElement('div'); row.className = 'qrow'; row.dataset.id = l.id;
+    row.innerHTML =
+      qtopHTML(l, '', { label: 'Dismiss', title: 'Clear without sending. Approving it clears it by itself.' }) +
+      '<div class="whatdo rev"><svg><use href="#ic-check"/></svg><div class="wt"><b>What to do</b>' + esc(actionText(l)) + '</div></div>' +
+      cardHTML(l) +
+      stepsHTML(l, now) +
+      '<div class="qdetail"></div>';
+    DETAIL_BY_ID[l.id] = row.querySelector('.qdetail');
+    wireDone(row, l);
+    return row;
+  }
+
+  function renderGroup(container, title, icon, items, makeRow, now){
+    if (!items.length) return;
+    const g = document.createElement('div'); g.className = 'group';
+    g.innerHTML = '<div class="group-head"><svg><use href="#' + icon + '"/></svg><b>' + title + '</b> <span class="n">(' + items.length + ')</span></div>';
+    const card = document.createElement('div'); card.className = 'card';
+    const LIMIT = 3;
+    items.slice(0, LIMIT).forEach(l => card.appendChild(makeRow(l, now)));
+    if (items.length > LIMIT){
+      const hidden = items.slice(LIMIT).map(l => makeRow(l, now));
+      const more = document.createElement('div'); more.className = 'more';
+      more.innerHTML = '<button>Show ' + hidden.length + ' more &darr;</button>';
+      more.querySelector('button').addEventListener('click', () => {
+        hidden.forEach(n => card.insertBefore(n, more));
+        more.remove();
+      });
+      card.appendChild(more);
+    }
+    g.appendChild(card);
+    container.appendChild(g);
+  }
+
+  let APPROVE_QUEUE = [];
+  let draftingStarted = false;
+  function renderTodo(leads, now){
+    const { calls, approvals } = needsList(leads, now);
+    const total = calls.length + approvals.length;
+    document.getElementById('todo-title').textContent = 'To do (' + total + ')';
+    const el = document.getElementById('todo-body');
+    el.innerHTML = '';
+    DETAIL_BY_ID = {}; draftingStarted = false;
+    if (!total){
+      el.innerHTML = '<div class="card allclear"><div class="big"><span class="chk">&#10003;</span> Nothing needs you right now</div><p>New calls and replies to approve show up here.</p></div>';
+      return;
+    }
+    APPROVE_QUEUE = approvals.slice();
+    renderGroup(el, 'Needs you now', 'ic-alert', calls, callRow, now);
+    renderGroup(el, 'Replies to approve', 'ic-email', approvals, approveRow, now);
+    focusTodoRow();
+    if (isPaneActive('todo')) runApproveQueue();
+  }
+  async function runApproveQueue(){
+    if (draftingStarted) return;
+    draftingStarted = true;
+    for (const l of APPROVE_QUEUE){
+      if (l.done) continue;
+      const out = DETAIL_BY_ID[l.id];
+      if (out) await autoDraft(l, out);
+    }
+  }
+
+  /* ---------- recent activity ---------- */
+  function feedNode(e, now){
+    const def = TOUCH_LABEL[e.type] || ['Handled'];
+    const node = document.createElement('div'); node.className = 'fitem';
+    node.innerHTML =
+      '<div class="ftime">' + rel(e.at, now).replace(' ago','') + '</div>' +
+      '<div class="fbody"><span class="dot">&#9679;</span>' + def[0] + ' <span class="obj">' + chIcon(e.ch) + ' ' + esc(e.who) + '</span>' +
+      (def[1] ? ', ' + def[1] : '') + '</div>' +
+      '<div class="fgo">&rsaquo;</div>';
+    node.title = 'Open this lead';
+    node.addEventListener('click', () => openLead(e.leadId));
+    return node;
+  }
+  function renderFeed(leads, now){
+    const events = [];
+    leads.forEach(l => (l.touches||[]).forEach(t => {
+      if (AGENT_TOUCHES.has(t.type)) events.push({ at: t.at, type: t.type, who: l.enquirer, ch: l.channel, leadId: l.id });
+    }));
+    events.sort((a,b) => a.at < b.at ? 1 : -1);
+    const el = document.getElementById('recent');
+    el.innerHTML = '';
+    if (!events.length){ el.innerHTML = '<div style="padding:20px 0;color:var(--text-3);font-size:13px;">No activity yet.</div>'; return; }
+    const LIMIT = 5;
+    events.slice(0, LIMIT).forEach(e => el.appendChild(feedNode(e, now)));
+    if (events.length > LIMIT){
+      const more = document.createElement('div'); more.className = 'more'; more.style.margin = '0 -12px';
+      more.innerHTML = '<button>Show ' + (events.length - LIMIT) + ' more &darr;</button>';
+      more.querySelector('button').addEventListener('click', () => {
+        events.slice(LIMIT).forEach(e => el.insertBefore(feedNode(e, now), more));
+        more.remove();
+      });
+      el.appendChild(more);
+    }
+  }
+  function openLead(id){
+    showPane('leads');
+    FILTER = 'all'; renderFilters(LEADS); renderTable(LEADS, NOW);
+    const row = LEAD_ROWS[id];
+    if (row){ row.expand(); row.tr.scrollIntoView({ block: 'center' }); }
+  }
+
+  /* ---------- leads ---------- */
+  function journey(l){
+    if (l.bucket === 'not_an_enquiry' || l.status === 'archived') return ['Archived', 'closed'];
+    if (l.status === 'closed') return ['Closed', 'closed'];
+    if (l.status === 'attended') return ['Consulted', 'booked'];
+    if (l.status === 'booked') return ['Booked', 'booked'];
+    if (l.status === 'no_show') return ['Rebooking', 'open'];
+    if (l.status === 'nurture') return ['Staying in touch', 'open'];
+    if (l.escalate && l.status === 'escalated') return [l.done ? 'With your team' : 'Acknowledged', 'open'];
+    const chased = (l.touches||[]).some(t => CHASES.has(t.type));
+    return [chased ? 'In follow-up' : 'Replied', 'open'];
+  }
+  function ownerOf(l, now){
+    if (l.bucket === 'not_an_enquiry' || l.status === 'archived' || l.status === 'closed') return null;
+    if (l.escalate && l.status === 'escalated') return 'you';
+    if (l.status === 'attended') return 'you';
+    if (l.followup && new Date(l.followup.due) <= now) return 'you';
+    return 'desk';
+  }
+  function nextText(l, now){
+    if (l.escalate && l.status === 'escalated') return l.done ? 'With your team' : escalationAction(l).short;
+    if (l.followup){
+      const due = new Date(l.followup.due) <= now;
+      const ft = FOLLOWUP_LABEL[l.followup.type] || l.followup.type;
+      if (due) return 'Approve the ' + ft;
+      return 'Sends the ' + ft + ' ' + rel(l.followup.due, now);
+    }
+    if (l.status === 'attended') return 'With your consultant';
+    return 'Nothing planned';
+  }
+  function lastAction(l){
+    const t = (l.touches||[]).slice(-1)[0];
+    if (!t) return 'Logged, no reply needed';
+    if (t.type === 'marked_done' && t.action) return t.action;
+    return (TOUCH_STEP[t.type] || ['Handled'])[0];
+  }
+  function actorPill(who){
+    if (who === 'you') return '<span class="actor you"><svg><use href="#ic-user"/></svg>You</span>';
+    if (who === 'desk') return '<span class="actor desk"><svg><use href="#ic-bolt-sm"/></svg>Desk</span>';
+    return '<span class="did">&ndash;</span>';
+  }
+  function filterKey(l, now){
+    if (l.bucket === 'not_an_enquiry' || l.status === 'archived' || l.status === 'closed') return 'closed';
+    if (l.status === 'booked' || l.status === 'attended') return 'booked';
+    return ownerOf(l, now) === 'you' ? 'you' : 'desk';
+  }
+
+  let FILTER = 'all';
+  function renderFilters(leads){
+    const counts = { all: leads.length, you: 0, desk: 0, booked: 0, closed: 0 };
+    leads.forEach(l => counts[filterKey(l, NOW)]++);
+    const defs = [['all','All'],['you','With you'],['desk','With the desk'],['booked','Booked'],['closed','Closed']];
+    const el = document.getElementById('filters');
+    el.innerHTML = defs.map(([k, label]) =>
+      '<button data-f="' + k + '" class="' + (FILTER===k?'on':'') + '">' + label + ' <span class="n">' + counts[k] + '</span></button>'
+    ).join('');
+    el.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { FILTER = b.dataset.f; renderFilters(LEADS); renderTable(LEADS, NOW); }));
+  }
+
+  let LEAD_ROWS = {};
+  function lastAt(l){ const t = (l.touches||[]).slice(-1)[0]; return t ? t.at : l.received; }
+  function renderTable(leads, now){
+    const rows = leads.filter(l => FILTER === 'all' || filterKey(l, now) === FILTER)
+      .sort((a, b) => lastAt(a) < lastAt(b) ? 1 : -1);
+    const body = document.getElementById('leadrows');
+    body.innerHTML = ''; LEAD_ROWS = {};
+    rows.forEach(l => {
+      const j = journey(l);
+      const when = lastAt(l);
+      const tr = document.createElement('tr'); tr.className = 'lead';
+      tr.innerHTML =
+        '<td class="lead-cell"><div class="who">' + chIcon(l.channel) + esc(l.enquirer) +
+        (l.sample ? ' <span class="sampletag">Sample</span>' : '') + '</div><div class="what">' + esc(l.summary) + '</div></td>' +
+        '<td><span class="st ' + j[1] + '"><i></i>' + j[0] + '</span></td>' +
+        '<td>' + actorPill(ownerOf(l, now)) + '</td>' +
+        '<td class="did">' + esc(lastAction(l)) + '</td>' +
+        '<td class="did when">' + rel(when, now) + '</td>' +
+        '<td><span class="next">' + esc(nextText(l, now)) + '</span></td>';
+      let openRow = null;
+      function expand(){
+        if (openRow) return;
+        openRow = document.createElement('tr'); openRow.className = 'expand';
+        const td = document.createElement('td'); td.colSpan = 6;
+        td.innerHTML = cardHTML(l) + stepsHTML(l, now);
+        openRow.appendChild(td);
+        tr.after(openRow);
+      }
+      tr.addEventListener('click', () => { if (openRow){ openRow.remove(); openRow = null; } else expand(); });
+      LEAD_ROWS[l.id] = { tr, expand };
+      body.appendChild(tr);
+    });
+  }
+
+  let LEADS = [], NOW = new Date();
+  async function load(){
+    NOW = new Date();
+    try { LEADS = await DeskStore.allLeads(NOW); }
+    catch(e){ document.getElementById('hero').innerHTML = '<h1 class="ptitle">Could not load the sample data. Refresh the page.</h1>'; return; }
+    renderHero(LEADS, NOW);
+    initRange(LEADS);
+    renderNumbers(LEADS);
+    renderTodo(LEADS, NOW);
+    renderFeed(LEADS, NOW);
+    renderFilters(LEADS);
+    renderTable(LEADS, NOW);
+  }
+  paneFromHash();
+  load();
+</script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+/* Briska demo: shared brand layer. Tokens follow briska/brand/tokens.css; check the
+   style guide before touching colours. No gradients anywhere, per the brand checklist. */
+
+@font-face {
+  font-family: "Switzer";
+  src: url("assets/switzer-variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --sans: "Switzer", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "PingFang HK", "Microsoft JhengHei", sans-serif;
+  --mono: "SF Mono", ui-monospace, Consolas, Menlo, monospace;
+
+  --bg: #08090b; --panel: #101114; --panel-2: #16181c; --elev: #1c1f25;
+  --line: rgba(255,255,255,0.07); --line-2: rgba(255,255,255,0.13);
+  --text: #f4f4f5; --text-2: #a7abb3; --text-3: #6f7480;
+
+  --accent: #2FA4E7; --accent-hi: #6FC9F5; --accent-ink: #0B1E2C;
+  --accent-bg: rgba(47,164,231,0.09); --accent-line: rgba(47,164,231,0.32);
+
+  --amber: #f5b544; --amber-bg: rgba(245,181,68,0.10); --amber-line: rgba(245,181,68,0.30);
+  --red: #f87171; --red-bg: rgba(248,113,113,0.09); --red-line: rgba(248,113,113,0.32);
+
+  --shadow-card: 0 18px 50px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+* { box-sizing: border-box; margin: 0; }
+
+body {
+  background: var(--bg); color: var(--text); min-height: 100vh;
+  font: 15px/1.55 var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- top bar, same on every page ---- */
+.topbar {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  padding-bottom: 18px; border-bottom: 1px solid var(--line); margin-bottom: 18px;
+}
+.brand { display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 650; letter-spacing: -0.02em; color: var(--text); text-decoration: none; }
+.brand img { width: 20px; height: 20px; display: block; }
+.brand .co { color: var(--text-3); font-weight: 500; }
+.tabs { display: flex; gap: 4px; background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 3px; }
+.tabs a { color: var(--text-2); text-decoration: none; font-size: 13px; font-weight: 550; padding: 6px 14px; border-radius: 999px; white-space: nowrap; }
+.tabs a:hover { color: var(--text); }
+.tabs a.here { color: var(--text); background: var(--elev); }
+
+/* ---- the concept banner: every page says plainly that this is a demo ---- */
+.demobar {
+  display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+  padding: 9px 14px; margin-bottom: 22px; font-size: 12.5px; color: var(--text-3);
+}
+.demobar .chip {
+  font-family: var(--mono); font-size: 10.5px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase;
+  color: var(--accent); background: var(--accent-bg); border: 1px solid var(--accent-line);
+  border-radius: 999px; padding: 2px 9px; white-space: nowrap;
+}
+.demobar a { color: var(--text-2); text-decoration: underline; text-underline-offset: 2px; }
+.demobar a:hover { color: var(--text); }
+
+/* ---- shared shapes ---- */
+.btn-pill { border-radius: 999px; }
+::selection { background: var(--accent); color: var(--accent-ink); }

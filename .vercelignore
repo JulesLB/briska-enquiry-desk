@@ -1,0 +1,6 @@
+service/
+evals/
+tests/
+.github/
+README.md
+dev.py

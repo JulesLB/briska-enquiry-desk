@@ -1,0 +1,23 @@
+{
+  "firm_name": "[Firm]",
+  "firm_phone": "[phone]",
+  "booking_link": "[booking link]",
+  "known_clients": [],
+  "declined_streams": [],
+  "referral_policy": "do not refer out",
+  "fee_policy": "no quotes in writing; the exact quote comes once the right visa is confirmed",
+  "language_policy": "reply in the enquiry's language",
+  "approver_email": "",
+  "escalation_subject_prefix": "[URGENT — enquiry desk]",
+  "mailbox": {
+    "host": "imap.gmail.com",
+    "user": "",
+    "inbox_folder": "INBOX",
+    "drafts_folder": "[Gmail]/Drafts",
+    "smtp_host": "smtp.gmail.com",
+    "smtp_port": 587
+  },
+  "poll_seconds": 90,
+  "brain": "cli",
+  "api_model": "claude-haiku-4-5"
+}

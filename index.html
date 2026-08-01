@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Briska enquiry desk — live demo</title>
+<link rel="icon" href="assets/briska-mark.svg" type="image/svg+xml">
+<link rel="preload" as="font" type="font/woff2" href="assets/switzer-variable.woff2" crossorigin>
+<link rel="stylesheet" href="demo.css">
+<style>
+  .wrap { max-width: 760px; margin: 0 auto; padding: 22px 20px 90px; }
+
+  .composer { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 18px; box-shadow: var(--shadow-card); }
+  label { display: block; font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-3); margin-bottom: 10px; }
+  .channels { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  .chbtn {
+    display: inline-flex; align-items: center; gap: 7px; font: inherit; font-size: 13px; font-weight: 600;
+    color: var(--text-2); background: var(--panel-2); border: 1px solid var(--line); border-radius: 999px;
+    padding: 6px 14px; cursor: pointer;
+  }
+  .chbtn svg { width: 15px; height: 15px; }
+  .chbtn:hover { color: var(--text); border-color: var(--line-2); }
+  .chbtn.on { color: var(--text); background: var(--elev); border-color: var(--accent-line); }
+  textarea {
+    width: 100%; min-height: 88px; resize: vertical; background: var(--bg); color: var(--text);
+    border: 1px solid var(--line); border-radius: 11px; padding: 12px 14px; font: inherit;
+  }
+  textarea:focus { outline: none; border-color: var(--accent); }
+  .row { display: flex; align-items: center; gap: 14px; margin-top: 12px; }
+  button.primary {
+    background: var(--accent); color: var(--accent-ink); font-weight: 700; font-size: 15px; font-family: inherit;
+    border: none; border-radius: 999px; padding: 10px 24px; cursor: pointer;
+  }
+  button.primary:hover { background: var(--accent-hi); }
+  button.primary:disabled { opacity: .45; cursor: default; }
+
+  .card.thinking { border-color: var(--accent-line); }
+  .thinkbox { margin-top: 14px; background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 13px 15px; }
+  .tb-head { display: flex; align-items: center; gap: 9px; }
+  .tb-head svg { width: 21px; height: 21px; flex: none; animation: boltbuzz 1.4s ease-in-out infinite; }
+  .tb-head b { color: var(--text); font-weight: 620; font-size: 13px; }
+  .tb-time { margin-left: auto; font-family: var(--mono); font-size: 11.5px; color: var(--text-3); font-variant-numeric: tabular-nums; }
+  @keyframes boltbuzz {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    45% { transform: scale(1.13) rotate(-4deg); }
+  }
+  .tsteps { margin-top: 13px; display: flex; flex-direction: column; gap: 10px; }
+  .tstep { display: flex; align-items: center; gap: 11px; font-size: 13px; color: var(--text-3); transition: color .35s ease; }
+  .tdot { width: 8px; height: 8px; border-radius: 50%; background: var(--line-2); flex: none; transition: background .35s ease; }
+  .tstep.done { color: var(--text-2); }
+  .tstep.done .tdot { background: var(--accent); }
+  .tstep.on { color: var(--text); }
+  .tstep.on .tdot { background: var(--accent); animation: dotpulse 1.3s ease-out infinite; }
+  @keyframes dotpulse {
+    0% { box-shadow: 0 0 0 0 rgba(47,164,231,.45); }
+    100% { box-shadow: 0 0 0 9px rgba(47,164,231,0); }
+  }
+  .tstep.on .tlabel { animation: breathe 1.6s ease-in-out infinite; }
+  @keyframes breathe { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
+  @media (prefers-reduced-motion: reduce) {
+    .tb-head svg, .tstep.on .tdot, .tstep.on .tlabel { animation: none; }
+  }
+  .samples { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  .samples-label { font-size: 12px; color: var(--text-3); }
+  button.sample {
+    background: var(--panel-2); color: var(--text-2); border: 1px solid var(--line); font-family: inherit;
+    border-radius: 999px; padding: 4px 12px; font-size: 12.5px; cursor: pointer;
+  }
+  button.sample:hover { color: var(--text); border-color: var(--accent-line); }
+
+  #feed { margin-top: 24px; display: flex; flex-direction: column; gap: 18px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 18px; }
+  .chead { display: flex; align-items: center; gap: 9px; margin-bottom: 10px; font-size: 13px; color: var(--text-3); }
+  .chead svg { width: 15px; height: 15px; color: var(--text-2); }
+  .msg { color: var(--text-2); font-size: 13.5px; border-left: 3px solid var(--line-2); padding-left: 12px; margin-bottom: 14px; white-space: pre-wrap; }
+
+  .flowbox { border: 1px solid var(--accent-line); background: var(--accent-bg); border-radius: 13px; padding: 13px 15px 14px; }
+  .fb-head { display: flex; align-items: center; gap: 9px; margin-bottom: 11px; }
+  .fb-head svg { width: 25px; height: 25px; flex: none; }
+  .fb-head b { font-size: 14px; letter-spacing: -0.01em; }
+  .readgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .rbox { background: var(--bg); border: 1px solid var(--line); border-radius: 9px; padding: 8px 11px; min-width: 0; }
+  .rbox .k { font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-3); margin-bottom: 3px; }
+  .rbox .v { font-size: 13px; font-weight: 640; color: var(--text); line-height: 1.35; }
+  .rbox.good .v { color: var(--accent); }
+  .rbox.warn .v { color: var(--amber); }
+  .rbox.dim .v { color: var(--text-2); font-weight: 550; }
+
+  .draftsec { margin-top: 12px; }
+  .draft-label { display: flex; align-items: center; gap: 7px; font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-3); margin-bottom: 7px; }
+  .draft-label svg { width: 14px; height: 14px; }
+  .draft { background: var(--bg); border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 10px; padding: 13px 15px; white-space: pre-wrap; font-size: 14px; }
+  .draft.held { border-left-color: var(--amber); }
+
+  /* the safety filter, shown working: the whole reason this demo exists */
+  .gbox { margin-top: 12px; border: 1px solid var(--red-line); background: var(--red-bg); border-radius: 13px; padding: 13px 15px 15px; }
+  .gb-head { display: flex; align-items: center; gap: 9px; margin-bottom: 8px; }
+  .gb-head svg { width: 18px; height: 18px; color: var(--red); flex: none; }
+  .gb-head b { font-size: 13.5px; letter-spacing: -0.01em; }
+  .gb-sub { font-size: 12.5px; color: var(--text-2); line-height: 1.55; margin-bottom: 10px; }
+  .ghits { display: flex; flex-direction: column; gap: 6px; margin-bottom: 11px; }
+  .ghit { display: flex; align-items: baseline; gap: 8px; font-size: 12.5px; color: var(--text-2); }
+  .ghit .gcat { font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--red); background: var(--bg); border: 1px solid var(--red-line); border-radius: 999px; padding: 1px 8px; flex: none; }
+  .gblocked { background: var(--bg); border: 1px solid var(--line); border-left: 3px solid var(--red); border-radius: 10px; padding: 11px 14px; white-space: pre-wrap; font-size: 13px; color: var(--text-3); text-decoration: line-through; text-decoration-color: rgba(248,113,113,0.5); }
+  .gnote { font-size: 12px; color: var(--text-3); margin-top: 9px; }
+
+  .logbox { margin-top: 12px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 11px; padding: 11px 14px; }
+  .logbox .lh { display: flex; align-items: center; gap: 7px; font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-3); margin-bottom: 7px; }
+  .logbox .lh svg { width: 13px; height: 13px; color: var(--accent); }
+  .lrow { display: grid; grid-template-columns: 92px 1fr; gap: 10px; font-size: 13px; padding: 3px 0; }
+  .lrow .k { color: var(--text-3); }
+  .lrow .v { color: var(--text-2); }
+  .lrow .v a { color: var(--accent); text-decoration: none; font-weight: 600; }
+  .lrow .v a:hover { text-decoration: underline; }
+
+  .error { color: var(--amber); white-space: pre-wrap; font-size: 13.5px; }
+  pre.raw { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 12px; overflow-x: auto; font-size: 12.5px; color: var(--text-2); }
+
+  .daily { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 16px 18px; margin-top: 18px; }
+  .daily-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+  .daily-head .dh-l { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-3); }
+  .daily-head .dh-l svg { width: 16px; height: 16px; color: var(--accent); }
+  .daily-head button { font: inherit; font-size: 12.5px; font-weight: 650; color: var(--text-2); background: var(--panel-2); border: 1px solid var(--line-2); border-radius: 999px; padding: 6px 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+  .daily-head button:hover { color: var(--text); border-color: var(--text-3); }
+  .daily-head button svg { width: 13px; height: 13px; }
+  .bubble { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 13px 15px; font-size: 13.5px; color: var(--text); line-height: 1.6; }
+  .bubble .mgreet { margin-bottom: 9px; }
+  .bubble .mline { display: flex; gap: 8px; padding: 2px 0; color: var(--text-2); }
+  .bubble .mline .bul { color: var(--text-3); flex: none; }
+  .bubble .mline b { color: var(--text); font-weight: 600; }
+  .bubble .mall { display: inline-block; margin-top: 11px; color: var(--accent); text-decoration: none; word-break: break-all; }
+  .bubble .mall:hover { text-decoration: underline; }
+
+  @media (max-width: 560px) { .readgrid { grid-template-columns: repeat(2, 1fr); } }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="ic-email" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4.5" width="19" height="15" rx="2.5"/><path d="m3.5 7.5 8.5 5.8 8.5-5.8"/></symbol>
+  <symbol id="ic-wa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 1 1 16.1-3.8z"/><path d="M9 9.5c.5 2.4 2.6 4.5 5 5l1.5-1.5"/></symbol>
+  <symbol id="ic-wc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 10h.01M12 10h.01M16 10h.01"/></symbol>
+  <symbol id="ic-web" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M2.5 12h19"/><path d="M12 2.5a14.5 14.5 0 0 1 3.8 9.5 14.5 14.5 0 0 1-3.8 9.5 14.5 14.5 0 0 1-3.8-9.5A14.5 14.5 0 0 1 12 2.5z"/></symbol>
+  <symbol id="ic-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m4 13 5 5L20 7"/></symbol>
+  <symbol id="ic-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 3v5h-5"/></symbol>
+  <symbol id="ic-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5 4 6v5.5c0 5 3.4 8.6 8 10 4.6-1.4 8-5 8-10V6z"/></symbol>
+</defs></svg>
+
+<div class="wrap">
+  <div class="topbar">
+    <a class="brand" href="https://briska.ai"><img src="assets/briska-mark.svg" alt=""> Briska <span class="co">demo</span></a>
+    <div class="tabs">
+      <a href="/" class="here">Enquiry desk</a>
+      <a href="/dashboard">Dashboard</a>
+      <a href="/report">Report</a>
+      <a href="/about">How it works</a>
+    </div>
+  </div>
+
+  <div class="demobar">
+    <span class="chip">Live demo</span>
+    <span>A sample Hong Kong immigration firm. The replies are drafted live by the AI assistant; nothing you type is stored anywhere but your own browser. <a href="/about">How it works</a></span>
+  </div>
+
+  <section class="composer">
+    <label for="enquiry">Type an enquiry, any language</label>
+    <div class="channels" id="channels">
+      <button class="chbtn on" data-ch="email"><svg><use href="#ic-email"/></svg>Email</button>
+      <button class="chbtn" data-ch="whatsapp"><svg><use href="#ic-wa"/></svg>WhatsApp</button>
+      <button class="chbtn" data-ch="form"><svg><use href="#ic-web"/></svg>Website form</button>
+      <button class="chbtn" data-ch="wechat"><svg><use href="#ic-wc"/></svg>WeChat</button>
+    </div>
+    <textarea id="enquiry" maxlength="2000" placeholder="Paste or type what the enquirer wrote"></textarea>
+    <div class="row">
+      <button class="primary" id="send">Process enquiry</button>
+    </div>
+    <div class="samples">
+      <span class="samples-label">Try one:</span>
+      <button class="sample" data-q="hi do you do visa">Vague one liner</button>
+      <button class="sample" data-q="My visa expired 3 weeks ago and I'm still in HK, what do I do?">Overstay</button>
+      <button class="sample" data-q="38, PhD, 10 years fintech. Yes or no: do I qualify for QMAS? And your exact fee.">Fee pressure</button>
+      <button class="sample" data-q="想幫外母申請受養人簽證，我太太係香港永久居民">Chinese dependant</button>
+    </div>
+  </section>
+
+  <section id="feed"></section>
+
+  <section class="daily">
+    <div class="daily-head">
+      <span class="dh-l"><svg><use href="#ic-wa"/></svg>Your daily message</span>
+      <button id="gen"><svg><use href="#ic-refresh"/></svg>Generate</button>
+    </div>
+    <div id="digest"></div>
+  </section>
+</div>
+
+<script src="leads.js"></script>
+<script>
+  const sendBtn = document.getElementById('send');
+  const box = document.getElementById('enquiry');
+  const feed = document.getElementById('feed');
+  let channel = 'email';
+
+  const CH = {
+    email:    { icon: 'ic-email', name: 'Email',        back: 'by email' },
+    whatsapp: { icon: 'ic-wa',    name: 'WhatsApp',     back: 'on WhatsApp' },
+    form:     { icon: 'ic-web',   name: 'Website form', back: 'by email, to the address on your form' },
+    wechat:   { icon: 'ic-wc',    name: 'WeChat',       back: 'on WeChat' }
+  };
+  const STREAM_LABEL = { ttps_a: 'Top Talent Pass A', ttps_bc: 'Top Talent Pass B/C', qmas: 'QMAS', gep: 'Employment visa', dependant: 'Dependant visa', other: 'Other' };
+  const LANG_LABEL = { en: 'English', 'zh-hant': '繁體中文', 'zh-hans': '简体中文' };
+  const GCAT = { verdict: 'Verdict', fee: 'Fee', advice: 'Advice' };
+
+  document.querySelectorAll('.chbtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      channel = btn.dataset.ch;
+      document.querySelectorAll('.chbtn').forEach(b => b.classList.toggle('on', b === btn));
+    });
+  });
+  document.querySelectorAll('.sample').forEach(btn => {
+    btn.addEventListener('click', () => { box.value = btn.dataset.q; box.focus(); });
+  });
+
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+  function chIcon(ch) { return '<svg aria-hidden="true"><use href="#' + (CH[ch] || CH.email).icon + '"/></svg>'; }
+
+  function rbox(k, v, cls) {
+    return '<div class="rbox ' + (cls || '') + '"><div class="k">' + esc(k) + '</div><div class="v">' + esc(v) + '</div></div>';
+  }
+
+  function readBoxes(c) {
+    const boxes = [];
+    if (c.escalate) {
+      const ETYPE = { qualified: 'New lead', unclear: 'Possible lead', existing_client: 'Existing client', no_fit: 'No visa fits' };
+      boxes.push(rbox('Type', ETYPE[c.bucket] || 'New lead', 'warn'));
+      boxes.push(rbox('Urgency', c.urgent ? 'High, same day' : 'Raised', 'warn'));
+      boxes.push(rbox('Routed to', 'A consultant, now', 'warn'));
+      boxes.push(rbox('Advice in reply', 'None, on purpose', 'dim'));
+      boxes.push(rbox('Language', LANG_LABEL[c.language] || c.language || 'English', 'dim'));
+      boxes.push(rbox('Reason', (c.escalation_reasons || []).join(', ').replace(/_/g, ' ') || 'sensitive', 'dim'));
+      return boxes;
+    }
+    const TYPE = { qualified: ['New lead', 'good'], unclear: ['Possible lead', ''], existing_client: ['Existing client', 'warn'], no_fit: ['No visa fits', 'dim'], not_an_enquiry: ['Vendor spam', 'dim'] };
+    const t = TYPE[c.bucket] || [c.bucket || 'Enquiry', ''];
+    boxes.push(rbox('Type', t[0], t[1]));
+    const fit = c.stream && c.stream !== 'none' ? (STREAM_LABEL[c.stream] || c.stream) : 'Not clear yet';
+    boxes.push(rbox('Scheme fit', fit, c.stream && c.stream !== 'none' ? 'good' : 'dim'));
+    boxes.push(rbox('Urgency', c.urgent ? 'High' : 'None', c.urgent ? 'warn' : 'dim'));
+    boxes.push(rbox('Language', LANG_LABEL[c.language] || c.language || 'English', 'dim'));
+    boxes.push(rbox('Confidence', c.confidence ? String(c.confidence) : 'medium', c.confidence === 'high' ? 'good' : 'dim'));
+    boxes.push(rbox('Next move', c.draft ? 'Ready to review and send' : 'Log only', c.draft ? 'good' : 'dim'));
+    return boxes;
+  }
+
+  const BOLT = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#08090b" stroke="rgba(47,164,231,0.55)" stroke-width="1.5"/><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="#2FA4E7" transform="translate(3.6,3.6) scale(0.7)"/></svg>';
+
+  /* the stages the prompt actually walks, plus the deterministic safety check at the end */
+  const THINK_STEPS = ['Reading the message', 'Checking for anything urgent', 'Identifying the visa', 'Writing the reply', 'Running the safety check'];
+  function startThinking(enquiry, ch) {
+    const card = document.createElement('div');
+    card.className = 'card thinking';
+    card.innerHTML =
+      '<div class="chead">' + chIcon(ch) + 'via ' + esc(CH[ch].name) + ' &middot; just now</div>' +
+      '<div class="msg">' + esc(enquiry) + '</div>' +
+      '<div class="thinkbox"><div class="tb-head">' + BOLT + '<b>The assistant is working</b><span class="tb-time">0s</span></div>' +
+      '<div class="tsteps">' + THINK_STEPS.map(s =>
+        '<div class="tstep"><span class="tdot"></span><span class="tlabel">' + esc(s) + '</span></div>').join('') +
+      '</div></div>';
+    feed.appendChild(card);
+    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const steps = [...card.querySelectorAll('.tstep')];
+    const timeEl = card.querySelector('.tb-time');
+    const t0 = Date.now();
+    let i = 0;
+    const paint = () => steps.forEach((s, k) => { s.classList.toggle('done', k < i); s.classList.toggle('on', k === i); });
+    paint();
+    /* hold on the last stage until the reply lands, so it never finishes before the assistant does */
+    const adv = setInterval(() => { if (i < steps.length - 1) { i++; paint(); } }, 2000);
+    const tick = setInterval(() => { timeEl.textContent = Math.round((Date.now() - t0) / 1000) + 's'; }, 250);
+    return { card, stop() { clearInterval(adv); clearInterval(tick); } };
+  }
+
+  function guardrailHTML(g) {
+    const hits = (g.hits || []).map(h =>
+      '<div class="ghit"><span class="gcat">' + esc(GCAT[h.category] || h.category) + '</span><span>&ldquo;' + esc(h.match) + '&rdquo;</span></div>').join('');
+    return '<div class="gbox"><div class="gb-head"><svg><use href="#ic-shield"/></svg><b>The safety filter blocked this draft</b></div>' +
+      '<div class="gb-sub">The assistant wrote a reply that crossed a line a licensed firm cannot cross in writing. A deterministic filter (plain pattern rules, no AI) caught it before it reached anyone. The model never gets the last word.</div>' +
+      '<div class="ghits">' + hits + '</div>' +
+      '<div class="gblocked">' + esc(g.original_draft || '') + '</div>' +
+      '<div class="gnote">What goes out instead: the safe acknowledgment below, and the enquiry is escalated to a person.</div></div>';
+  }
+
+  function renderCard(enquiry, ch, data, replace) {
+    const card = document.createElement('div');
+    card.className = 'card';
+    let html = '<div class="chead">' + chIcon(ch) + 'via ' + esc(CH[ch].name) + ' &middot; just now</div>';
+    html += '<div class="msg">' + esc(enquiry) + '</div>';
+    if (data.error) {
+      html += '<div class="error">' + esc(data.error) + '</div>';
+    } else if (data.raw) {
+      html += '<div class="draft-label">Unparsed output</div><pre class="raw">' + esc(data.raw) + '</pre>';
+    } else {
+      const c = data.card;
+      const g = data.guardrail;
+      html += '<div class="flowbox"><div class="fb-head">' + BOLT + '<b>What the assistant does</b></div>';
+      html += '<div class="readgrid">' + readBoxes(c).join('') + '</div></div>';
+      if (g && g.blocked && g.kind === 'draft_block') html += guardrailHTML(g);
+      if (c.draft) {
+        html += '<div class="draftsec"><div class="draft-label">' + chIcon(ch) + 'The reply, goes back ' + esc(CH[ch].back) + '</div>';
+        html += '<div class="draft' + (c.escalate ? ' held' : '') + '">' + esc(c.draft) + '</div></div>';
+      }
+      const lr = c.log_row || {};
+      html += '<div class="logbox"><div class="lh"><svg><use href="#ic-check"/></svg>Logged, automatically</div>';
+      if (lr.summary) html += '<div class="lrow"><span class="k">Summary</span><span class="v">' + esc(lr.summary) + '</span></div>';
+      if (lr.next_action) html += '<div class="lrow"><span class="k">Next step</span><span class="v">' + esc(lr.next_action) + '</span></div>';
+      html += '<div class="lrow"><span class="k">Filed in</span><span class="v"><a href="/dashboard">Your enquiry log</a></span></div>';
+      html += '</div>';
+    }
+    card.innerHTML = html;
+    if (replace && replace.parentNode) {
+      replace.replaceWith(card);
+    } else {
+      feed.appendChild(card);
+      card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  async function process() {
+    const enquiry = box.value.trim();
+    if (!enquiry) { box.focus(); return; }
+    sendBtn.disabled = true;
+    box.value = '';
+    const think = startThinking(enquiry, channel);
+    const t0 = Date.now();
+    try {
+      const res = await fetch('/api/enquiry', {
+        method: 'POST',
+        headers: DeskStore.apiHeaders(),
+        body: JSON.stringify({ enquiry, channel })
+      });
+      const data = await res.json();
+      think.stop();
+      renderCard(enquiry, channel, data, think.card);
+      if (!data.error && data.card) {
+        DeskStore.addLead(DeskStore.leadFromCard(enquiry, data.card, (Date.now() - t0) / 1000, channel, data.guardrail));
+        renderDigest();
+      }
+    } catch (err) {
+      think.stop();
+      renderCard(enquiry, channel, { error: 'Could not reach the demo backend. Give it a second and try again.' }, think.card);
+    } finally {
+      sendBtn.disabled = false;
+    }
+  }
+
+  sendBtn.addEventListener('click', process);
+  box.addEventListener('keydown', e => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') process();
+  });
+
+  /* the daily digest: what the owner receives each morning, built from the live queue */
+  const REASON_SHORT = { overstay: 'Overstay', complaint: 'Complaint', existing_client: 'Existing client', deadline_2w: 'Deadline inside 2 weeks', status_expiry_4w: 'Stay running out', refused_application: 'Past refusal', payment_risk: 'Payment risk', press_or_regulator: 'Press or regulator', low_confidence: 'Unclear', 'guardrail block': 'Held by the safety filter' };
+  const FUP = { chase_1: '1st follow-up', chase_2: '2nd follow-up', final_chase: 'final follow-up', booking_reminder: 'appointment reminder', no_show_rebook: 'rebooking offer', nurture: 'stay-in-touch note' };
+  function digestStep(l) {
+    if (l.phone) return 'call them today';
+    if (l.channel === 'whatsapp') return 'reply on WhatsApp';
+    if (l.channel === 'wechat') return 'reply on WeChat';
+    return 'urgent reply sent, watch for a number';
+  }
+  const CH_WORD = { email: 'email', whatsapp: 'WhatsApp', form: 'website form', wechat: 'WeChat', demo: 'email' };
+  function sentence(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+  async function renderDigest() {
+    const wrap = document.getElementById('digest');
+    const now = new Date();
+    let leads;
+    try { leads = await DeskStore.allLeads(now); }
+    catch (e) { wrap.innerHTML = '<div class="bubble">Could not load the sample data. Refresh the page.</div>'; return; }
+    const lines = [];
+    leads.forEach(l => {
+      if (l.done) return;
+      if (l.escalate && l.status === 'escalated')
+        lines.push({ urgent: true, sort: l.received, who: l.enquirer, ch: l.channel, text: (REASON_SHORT[(l.escalation_reasons || [])[0]] || 'for a consultant') + ', ' + digestStep(l) });
+      else if (l.followup && new Date(l.followup.due) <= now)
+        lines.push({ urgent: false, sort: l.followup.due, who: l.enquirer, ch: l.channel, text: 'approve the ' + (FUP[l.followup.type] || l.followup.type) });
+    });
+    if (!lines.length) {
+      wrap.innerHTML = '<div class="bubble"><div class="mgreet">Good morning. Nothing needs you today.</div></div>';
+      return;
+    }
+    /* the ones needing a consultant first, then the oldest approvals, so the top 5 is really the top 5 */
+    lines.sort((a, b) => a.urgent !== b.urgent ? (a.urgent ? -1 : 1) : (a.sort < b.sort ? -1 : 1));
+    const n = lines.length;
+    const TOP = 5;
+    const shown = lines.slice(0, TOP);
+    const items = shown.map(x =>
+      '<div class="mline"><span class="bul">&bull;</span><span class="mtext"><b>' + esc(x.who) + '</b> (' +
+      esc(CH_WORD[x.ch] || 'email') + '): ' + esc(sentence(x.text)) + '</span></div>').join('');
+    const greet = n > TOP
+      ? 'Good morning. ' + n + ' things need you today. The top ' + TOP + ':'
+      : 'Good morning. ' + n + ' thing' + (n > 1 ? 's' : '') + ' need' + (n > 1 ? '' : 's') + ' you today:';
+    const link = n > TOP ? 'See all ' + n + ': desk.[firm].com/today' : 'See them all: desk.[firm].com/today';
+    wrap.innerHTML = '<div class="bubble"><div class="mgreet">' + greet + '</div>' +
+      items + '<a class="mall" href="/dashboard#todo">' + link + '</a></div>';
+  }
+  document.getElementById('gen').addEventListener('click', renderDigest);
+  renderDigest();
+</script>
+</body>
+</html>

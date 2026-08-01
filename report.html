@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Weekly report — Briska demo</title>
+<link rel="icon" href="assets/briska-mark.svg" type="image/svg+xml">
+<link rel="preload" as="font" type="font/woff2" href="assets/switzer-variable.woff2" crossorigin>
+<link rel="stylesheet" href="demo.css">
+<style>
+  /* the report itself is a light "paper" artifact on the dark shell: it is the thing
+     the owner receives by email every Friday, shown as the printed page it is */
+  .page {
+    --paper: #ffffff; --ink: #131722; --ink-2: #475061; --ink-3: #8a93a3;
+    --pline: #e6eaf0; --pline-2: #d5dbe4;
+    --pa: #1B7FBE; --pa-2: #14669B; --pa-soft: #EFF7FC; --pa-line: #BFE0F4;
+    --pred: #C43D3D; --pred-soft: #FBF1F1; --pred-line: #F0CACA;
+    --pamber: #A86212; --pamber-soft: #FCF7EC; --pamber-line: #EFDDB9;
+  }
+  .wrap { max-width: 800px; margin: 0 auto; padding: 22px 20px 70px; }
+
+  .page { max-width: 760px; margin: 0 auto; background: var(--paper); border: 1px solid var(--pline); border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-card); color: var(--ink); }
+  .page p, .page h1, .page h2 { font-family: var(--sans); }
+
+  .head { padding: 34px 44px 26px; border-bottom: 1px solid var(--pline); }
+  .brandline { display: flex; align-items: center; gap: 9px; font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--pa-2); letter-spacing: 0.04em; text-transform: uppercase; }
+  .brandline .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--pa); }
+  .head h1 { font-size: 26px; letter-spacing: -0.02em; margin: 12px 0 5px; }
+  .head .meta { color: var(--ink-3); font-size: 13.5px; }
+  .samplebadge { display: inline-flex; align-items: center; gap: 7px; margin-top: 16px; background: var(--pamber-soft); border: 1px solid var(--pamber-line); color: var(--pamber); border-radius: 999px; padding: 6px 14px; font-size: 12.5px; font-weight: 500; }
+
+  .body { padding: 12px 44px 40px; }
+  .sec { padding: 26px 0; border-top: 1px solid var(--pline); }
+  .sec:first-child { border-top: none; }
+  .eyebrow { font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: var(--pa-2); margin-bottom: 4px; }
+  .sec h2 { font-size: 19px; letter-spacing: -0.015em; margin-bottom: 14px; }
+  .sec p { color: var(--ink-2); margin-bottom: 12px; }
+  .sec p:last-child { margin-bottom: 0; }
+  .sec p .em { color: var(--ink); font-weight: 600; }
+
+  .band { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border: 1px solid var(--pline); border-radius: 12px; overflow: hidden; margin-bottom: 18px; }
+  .band .n { padding: 16px 18px; border-right: 1px solid var(--pline); }
+  .band .n:last-child { border-right: none; }
+  .band .v { font-size: 27px; font-weight: 650; letter-spacing: -0.02em; line-height: 1; }
+  .band .v .u { font-size: 14px; color: var(--ink-3); font-weight: 500; margin-left: 2px; }
+  .band .l { font-size: 12px; color: var(--ink-3); margin-top: 7px; line-height: 1.35; }
+
+  .did-list { display: flex; flex-direction: column; gap: 2px; }
+  .did { display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: start; padding: 12px 0; border-top: 1px solid var(--pline); }
+  .did:first-child { border-top: none; }
+  .did .mark { width: 34px; height: 34px; border-radius: 9px; background: var(--pa-soft); border: 1px solid var(--pa-line); color: var(--pa-2); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; font-variant-numeric: tabular-nums; }
+  .did .txt { padding-top: 4px; color: var(--ink-2); font-size: 14px; }
+  .did .txt b { color: var(--ink); font-weight: 600; }
+
+  .value { background: var(--pa-soft); border: 1px solid var(--pa-line); border-radius: 12px; padding: 20px 22px; }
+  .value .vrow { display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px; }
+  .value .vnum { font-size: 30px; font-weight: 680; color: var(--pa-2); letter-spacing: -0.02em; line-height: 1; }
+  .value .vlab { font-size: 14.5px; color: var(--ink); font-weight: 600; }
+  .value p { color: var(--ink-2); font-size: 13.5px; margin: 0; }
+  .value p + p { margin-top: 8px; }
+
+  .esc { background: var(--pred-soft); border: 1px solid var(--pred-line); border-radius: 10px; padding: 13px 16px; font-size: 13.5px; color: var(--ink-2); margin-bottom: 9px; }
+  .esc:last-child { margin-bottom: 0; }
+  .esc b { color: var(--pred); font-weight: 650; }
+  .esc .h { color: var(--ink); font-weight: 600; }
+
+  ul.clean { list-style: none; padding: 0; }
+  ul.clean li { position: relative; padding: 7px 0 7px 20px; color: var(--ink-2); font-size: 14px; border-top: 1px solid var(--pline); }
+  ul.clean li:first-child { border-top: none; }
+  ul.clean li::before { content: ""; position: absolute; left: 3px; top: 15px; width: 6px; height: 6px; border-radius: 50%; background: var(--pa); }
+  ul.clean li b { color: var(--ink); font-weight: 600; }
+
+  .foot { padding: 20px 44px 30px; border-top: 1px solid var(--pline); font-size: 12.5px; color: var(--ink-3); }
+
+  @media (max-width: 620px) {
+    .head, .body, .foot { padding-left: 22px; padding-right: 22px; }
+    .band { grid-template-columns: repeat(2, 1fr); }
+    .band .n:nth-child(2) { border-right: none; }
+    .band .n:nth-child(1), .band .n:nth-child(2) { border-bottom: 1px solid var(--pline); }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <a class="brand" href="https://briska.ai"><img src="assets/briska-mark.svg" alt=""> Briska <span class="co">demo</span></a>
+    <div class="tabs">
+      <a href="/">Enquiry desk</a>
+      <a href="/dashboard">Dashboard</a>
+      <a href="/report" class="here">Report</a>
+      <a href="/about">How it works</a>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="head">
+      <div class="brandline"><span class="dot"></span> [Firm] enquiry desk</div>
+      <h1>Your week, in one page</h1>
+      <div class="meta">Week of 6 to 12 July 2026 &middot; prepared for [owner] by the enquiry desk</div>
+      <div class="samplebadge">Sample report with sample numbers. During a pilot this is generated weekly from the real enquiry log.</div>
+    </div>
+
+    <div class="body">
+
+      <div class="sec">
+        <div class="eyebrow">What happened</div>
+        <h2>14 enquiries came in. Every one was answered.</h2>
+        <div class="band">
+          <div class="n"><div class="v">14</div><div class="l">Enquiries received</div></div>
+          <div class="n"><div class="v">4<span class="u">min</span></div><div class="l">Median first response</div></div>
+          <div class="n"><div class="v">6</div><div class="l">Qualified leads</div></div>
+          <div class="n"><div class="v">3</div><div class="l">Consultations booked</div></div>
+        </div>
+        <p>The desk read and answered all 14 in a median of <span class="em">4 minutes</span>, day and night. It qualified 6, asked opening questions on 4 that were too vague to place, declined 1 with no visa that fits, filtered 2 pieces of spam, and passed 1 existing client straight to you. Of the 14, <span class="em">8 came through the website form and 6 by email</span>.</p>
+      </div>
+
+      <div class="sec">
+        <div class="eyebrow">How the desk helped</div>
+        <h2>The work it did so you didn't have to</h2>
+        <div class="did-list">
+          <div class="did"><div class="mark">14</div><div class="txt"><b>Answered every enquiry in minutes.</b> No lead sat overnight waiting for a reply. The market average is closer to 48 hours, which is where most enquiries go cold.</div></div>
+          <div class="did"><div class="mark">9</div><div class="txt"><b>Drafted 9 follow-ups</b> and queued them for your approval: 4 first follow-ups, 3 second follow-ups, 1 rebooking offer, 1 stay-in-touch note. Nothing sent without you.</div></div>
+          <div class="did"><div class="mark">2</div><div class="txt"><b>Revived 2 leads that had gone silent.</b> Both replied after a chase, and 1 booked a consultation. Without the chase, both were gone.</div></div>
+          <div class="did"><div class="mark">2</div><div class="txt"><b>Flagged 2 urgent cases to you the same hour,</b> with a warm holding note sent and no advice given, so a person could take over cleanly.</div></div>
+        </div>
+      </div>
+
+      <div class="sec">
+        <div class="eyebrow">The value delivered</div>
+        <h2>What this was worth</h2>
+        <div class="value">
+          <div class="vrow"><div class="vnum">3</div><div class="vlab">consultations booked this week, straight from cold enquiries</div></div>
+          <p>At your average case value, that is the pipeline the desk created in a week, for a fraction of the cost of an admin hire doing the same job by hand.</p>
+          <p>One of those three was a lead that had gone quiet and only booked because the desk chased it. That is revenue that would have leaked out silently, the kind you never see on a spreadsheet because it never becomes a number.</p>
+        </div>
+      </div>
+
+      <div class="sec">
+        <div class="eyebrow">Handled by a person, same hour</div>
+        <h2>2 cases the desk knew to stop and pass to you</h2>
+        <div class="esc"><span class="h">Overstay disclosure.</span> Tuesday 22:41, a visitor said their visa expired three weeks ago. The desk sent a warm acknowledgment, gave <b>no advice</b>, and flagged you. You called back Wednesday 09:05.</div>
+        <div class="esc"><span class="h">Existing client complaint, deadline in 10 days.</span> Friday 08:12. No case detail went out in writing; the named consultant called before 10:00.</div>
+      </div>
+
+      <div class="sec">
+        <div class="eyebrow">What your enquirers asked</div>
+        <h2>The themes worth knowing</h2>
+        <ul class="clean">
+          <li><b>Fees, first thing (5 of 14).</b> The desk held the fee line every time and 3 of the 5 answered the intake questions anyway.</li>
+          <li><b>Whether a parent qualifies as a dependant (2).</b> Routed to a consultation, no eligibility called in writing.</li>
+          <li><b>Top Talent Pass university checks (2).</b> The desk asked for graduation details instead of confirming any list.</li>
+        </ul>
+      </div>
+
+      <div class="sec">
+        <div class="eyebrow">Next week</div>
+        <h2>What to watch</h2>
+        <p>Two qualified leads are at their second chase with no reply. Both get a final note Monday, then the desk closes the thread warmly and stops. The booked Top Talent Pass consultation on Tuesday has a reminder queued for Monday afternoon.</p>
+      </div>
+
+    </div>
+
+    <div class="foot">Built from your enquiry log. Every number here reconciles with your <a href="/dashboard" style="color:var(--pa-2);font-weight:600;text-decoration:none;">dashboard</a>, which stays live between reports. In a pilot this footer carries the firm's own contact; for this demo, questions go to <a href="https://briska.ai" style="color:var(--pa-2);font-weight:600;text-decoration:none;">briska.ai</a>.</div>
+  </div>
+</div>
+</body>
+</html>
