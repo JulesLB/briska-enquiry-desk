@@ -38,15 +38,6 @@
   }
   .pipenote { font-size: 12.5px; color: var(--text-3); line-height: 1.55; max-width: 640px; }
 
-  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
-  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; }
-  .card h3 { font-size: 14.5px; font-weight: 650; letter-spacing: -0.01em; display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-  .card h3 svg { width: 16px; height: 16px; flex: none; color: var(--accent); }
-  .card.guard h3 svg { color: var(--red); }
-  .card p { font-size: 13.5px; line-height: 1.6; margin-bottom: 8px; }
-  .card p:last-child { margin-bottom: 0; }
-  @media (max-width: 640px) { .cards { grid-template-columns: 1fr; } }
-
   ul.tries { list-style: none; padding: 0; margin-top: 4px; max-width: 640px; }
   ul.tries li { position: relative; padding: 10px 0 10px 24px; color: var(--text-2); font-size: 14.5px; line-height: 1.6; border-top: 1px solid var(--line); }
   ul.tries li:first-child { border-top: none; }
@@ -70,9 +61,6 @@
   <symbol id="ic-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5 4 6v5.5c0 5 3.4 8.6 8 10 4.6-1.4 8-5 8-10V6z"/></symbol>
   <symbol id="ic-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></symbol>
   <symbol id="ic-doc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2.5H6.5A1.5 1.5 0 0 0 5 4v16a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 20V7.5z"/><path d="M14 2.5V7.5H19"/><path d="M9 12.5h6M9 16h6"/></symbol>
-  <symbol id="ic-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m4 13 5 5L20 7"/></symbol>
-  <symbol id="ic-flask" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6.3L4.7 18a2 2 0 0 0 1.8 3h11a2 2 0 0 0 1.8-3L14 9.3V3"/><path d="M7.5 15h9"/></symbol>
-  <symbol id="ic-server" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3.5" width="18" height="7" rx="2"/><rect x="3" y="13.5" width="18" height="7" rx="2"/><path d="M7 7h.01M7 17h.01"/></symbol>
 </defs></svg>
 
 <div class="wrap">
@@ -89,54 +77,28 @@
   <div class="hero">
     <div class="eyebrow">Under the hood</div>
     <h1>An AI enquiry desk with a human in the loop, by design</h1>
-    <p>You are looking at the front end of a working system: an AI assistant that answers, qualifies and books the enquiries a Hong Kong immigration firm receives, in minutes, in the enquirer's language. A person approves everything before it is sent. This page explains how it is built and why it is built that way.</p>
+    <p>You are looking at the front end of a working system: an AI assistant that answers, qualifies and books the enquiries a Hong Kong immigration firm receives, in minutes, across every channel (WhatsApp, WeChat, email).</p>
   </div>
 
   <section>
-    <div class="eyebrow">The pipeline</div>
-    <h2>One enquiry, five stops</h2>
+    <div class="eyebrow">The process</div>
+    <h2>A 5-step process for your enquiry</h2>
     <div class="pipe">
-      <div class="pnode"><div class="pt"><svg><use href="#ic-email"/></svg>Enquiry</div><div class="pd">Email, form, WhatsApp or WeChat. One door for every channel.</div></div>
+      <div class="pnode"><div class="pt"><svg><use href="#ic-email"/></svg>Enquiry</div><div class="pd">Capture every enquiry across channels: email, form, WhatsApp or WeChat.</div></div>
       <div class="parrow">&rsaquo;</div>
-      <div class="pnode"><div class="pt"><svg><use href="#ic-bolt-sm"/></svg>Triage + draft</div><div class="pd">One model call returns a fixed JSON contract: type, visa fit, urgency, language, reply.</div></div>
+      <div class="pnode"><div class="pt"><svg><use href="#ic-bolt-sm"/></svg>Triage + draft</div><div class="pd">The AI assistant triages the request and identifies type, visa fit, urgency, language, reply.</div></div>
       <div class="parrow">&rsaquo;</div>
       <div class="pnode guard"><div class="pt"><svg><use href="#ic-shield"/></svg>Safety filter</div><div class="pd">Deterministic rules, no AI. Blocks verdicts, fees and advice, in English and Chinese.</div></div>
       <div class="parrow">&rsaquo;</div>
-      <div class="pnode human"><div class="pt"><svg><use href="#ic-user"/></svg>Human approval</div><div class="pd">Drafts wait for a person. Sensitive cases skip the queue and escalate.</div></div>
+      <div class="pnode human"><div class="pt"><svg><use href="#ic-user"/></svg>Human review</div><div class="pd">Reply is drafted and ready for review. Escalated to WhatsApp or Telegram if it needs a person.</div></div>
       <div class="parrow">&rsaquo;</div>
-      <div class="pnode"><div class="pt"><svg><use href="#ic-doc"/></svg>Log + report</div><div class="pd">Every enquiry logged. One weekly report the owner actually reads.</div></div>
+      <div class="pnode"><div class="pt"><svg><use href="#ic-doc"/></svg>Log + report</div><div class="pd">Every action is logged, and a weekly report consolidates the findings and results.</div></div>
     </div>
-    <p class="pipenote">Try it live on the <a href="/">enquiry desk</a>. The "Fee pressure" sample baits the model into naming a fee and calling eligibility; watch the safety filter catch the draft and swap in a safe acknowledgment. The "Overstay" sample escalates to a person without giving advice. The Chinese sample gets its reply in Chinese.</p>
+    <p class="pipenote">Try it live on the <a href="/">enquiry desk</a>.</p>
   </section>
 
   <section>
-    <div class="eyebrow">The design choices</div>
-    <h2>Why it is built this way</h2>
-    <div class="cards">
-      <div class="card guard">
-        <h3><svg><use href="#ic-shield"/></svg>The model never gets the last word</h3>
-        <p>Immigration firms cannot call eligibility, quote fees or give application advice in a first written reply. So the last check is deterministic: a pattern filter scans every draft for verdict language, fee amounts and advice, in English and Chinese, with hedging detection to keep false positives down.</p>
-        <p>A hit blocks the draft, swaps in a canned acknowledgment and escalates to a person. No prompt engineering can talk it out of that.</p>
-      </div>
-      <div class="card">
-        <h3><svg><use href="#ic-check"/></svg>A contract, enforced, never trusted</h3>
-        <p>The model must return a fixed JSON object. Every field is validated against a whitelist before anything downstream touches it. Malformed output is treated as low confidence: the enquirer gets the safe acknowledgment and a person gets an alert.</p>
-        <p>Worst case at every failure point is the same: a polite holding reply and a human taking over.</p>
-      </div>
-      <div class="card">
-        <h3><svg><use href="#ic-flask"/></svg>Evals are the QA department</h3>
-        <p>The system prompt ships against a 26-case eval suite (plus 8 follow-up cases) with a written rubric and zero tolerance on missed escalations. The safety filter has 39 pinned test cases of its own, hedged phrasings included.</p>
-        <p>No prompt change goes live without a full scored sweep. The scorecard is the gate.</p>
-      </div>
-      <div class="card">
-        <h3><svg><use href="#ic-server"/></svg>Boring infrastructure, on purpose</h3>
-        <p>Standard-library Python, one model call per enquiry, static pages, serverless functions. In production the service polls the firm's own mailbox and writes drafts into their own Drafts folder: their data never moves house, and if the service dies they are exactly where they were before it existed.</p>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <div class="eyebrow">This demo, specifically</div>
+    <div class="eyebrow">About this demo</div>
     <h2>What is real and what is sample</h2>
     <ul class="tries">
       <li><b>The replies are real.</b> Each enquiry you type is one live model call (claude-haiku-4-5) through the same prompt and the same safety filter the production service uses.</li>
@@ -147,17 +109,17 @@
   </section>
 
   <section>
-    <div class="eyebrow">The numbers behind it</div>
+    <div class="eyebrow">Key figures</div>
     <h2>Testing discipline, measured</h2>
     <div class="numbers">
-      <div class="num"><div class="v">26 + 8</div><div class="l">Eval cases for triage and follow-ups, scored against a written rubric before any prompt ships</div></div>
+      <div class="num"><div class="v">26 + 8</div><div class="l">Eval cases for triage and follow-ups, scored against a written rubric before any prompt revision</div></div>
       <div class="num"><div class="v">39</div><div class="l">Pinned tests on the safety filter, covering hedged phrasings in English and Chinese</div></div>
       <div class="num"><div class="v">0</div><div class="l">Tolerance for missed escalations in an eval sweep. One miss fails the run</div></div>
     </div>
   </section>
 
   <section class="footer">
-    Built by <a href="https://www.linkedin.com/in/jules-le-breton/">Jules Le Breton</a> as part of <a href="https://briska.ai">Briska</a>, a done-for-you enquiry desk for Hong Kong service firms. The service behind this demo runs the same pipeline against a firm's real inbox during a 90-day pilot. Questions or a walkthrough: <a href="https://briska.ai">briska.ai</a>.
+    Built by <a href="https://www.linkedin.com/in/jules-le-breton/">Jules Le Breton</a> as part of <a href="https://briska.ai">Briska</a>, a done-for-you enquiry desk for Hong Kong service firms.
   </section>
 </div>
 </body>
